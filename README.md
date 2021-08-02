@@ -22,7 +22,7 @@ pip install -r requirements.txt
 npm install
 ```
 
-* Compilation / Transpilation (Generate component library)
+* Run build script
 ```
-npm build
+npm run build
 ```
