@@ -16,11 +16,13 @@ This is the codebase for Terra Test Runner Dashboard.
 pip install -r requirements.txt
 ```
 2. Change directory to `react` and execute the following commands in order
-   * Install all dependencies in `package.json`
+   
+* Install all dependencies in `package.json`
 ```
 npm install
 ```
-   * Compilation / Transpilation (Generate component library)
+
+* Compilation / Transpilation (Generate component library)
 ```
 npm build
 ```
