@@ -9,7 +9,7 @@ import sys
 import importlib
 
 
-components_package = 'react'
+components_package = 'test_runner_components'
 
 components_lib = importlib.import_module(components_package)
 

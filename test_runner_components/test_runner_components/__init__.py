@@ -66,12 +66,12 @@ _js_dist.extend(
 _js_dist.extend(
     [
         {
-            'relative_package_path': 'react.min.js',
+            'relative_package_path': 'test_runner_components.min.js',
     
             'namespace': package_name
         },
         {
-            'relative_package_path': 'react.min.js.map',
+            'relative_package_path': 'test_runner_components.min.js.map',
     
             'namespace': package_name,
             'dynamic': True

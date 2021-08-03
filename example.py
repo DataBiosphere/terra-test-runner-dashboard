@@ -1,4 +1,4 @@
-import react
+import test_runner_components
 import dash
 from dash.dependencies import Input, Output
 import dash_html_components as html
@@ -6,7 +6,7 @@ import dash_html_components as html
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    react.ExampleComponent(
+    test_runner_components.ExampleComponent(
         id='input',
         value='my-value',
         label='my-label'

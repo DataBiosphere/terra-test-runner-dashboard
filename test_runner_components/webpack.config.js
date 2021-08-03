@@ -107,7 +107,7 @@ module.exports = (env, argv) => {
                         chunks: 'all',
                         minSize: 0,
                         minChunks: 2,
-                        name: 'react-shared'
+                        name: 'test_runner_components-shared'
                     }
                 }
             }

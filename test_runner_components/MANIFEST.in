@@ -1,0 +1,11 @@
+include test_runner_components/test_runner_components.min.js
+include test_runner_components/test_runner_components.min.js.map
+include test_runner_components/async-*.js
+include test_runner_components/async-*.js.map
+include test_runner_components/*-shared.js
+include test_runner_components/*-shared.js.map
+include test_runner_components/metadata.json
+include test_runner_components/package-info.json
+include README.md
+include LICENSE
+include package.json
