@@ -1,7 +1,9 @@
-from .ClickCount import ClickCount
+from .ExampleArrowFuncComponentWithHook import ExampleArrowFuncComponentWithHook
 from .ExampleComponent import ExampleComponent
+from .ExampleFuncComponentWithHook import ExampleFuncComponentWithHook
 
 __all__ = [
-    "ClickCount",
-    "ExampleComponent"
+    "ExampleArrowFuncComponentWithHook",
+    "ExampleComponent",
+    "ExampleFuncComponentWithHook"
 ]

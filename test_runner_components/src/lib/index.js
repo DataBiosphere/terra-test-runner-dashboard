@@ -1,8 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import ExampleComponent from './components/ExampleComponent.react';
-import { ClickCount } from './components/ClickCount'
+import { ExampleFuncComponentWithHook } from './components/ExampleFuncComponentWithHook'
+import { ExampleArrowFuncComponentWithHook } from './components/ExampleArrowFuncComponentWithHook'
 
 export {
     ExampleComponent,
-    ClickCount
+    ExampleFuncComponentWithHook,
+    ExampleArrowFuncComponentWithHook
 };

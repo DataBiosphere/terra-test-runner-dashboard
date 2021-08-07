@@ -1,7 +1,7 @@
 /* eslint no-magic-numbers: 0 */
 import React, {Component} from 'react';
 
-import { ExampleComponent, ClickCount } from '../lib';
+import { ExampleComponent, ExampleFuncComponentWithHook } from '../lib';
 
 class App extends Component {
 
@@ -24,7 +24,7 @@ class App extends Component {
                     setProps={this.setProps}
                     {...this.state}
                 />
-                <ClickCount id={"TestRunner"} />
+                <ExampleFuncComponentWithHook id={"TestRunner"} />
             </div>
         )
     }

@@ -5,7 +5,7 @@ import dash_html_components as html
 app = Dash(__name__)
 
 app.layout = html.Div([
-    test_runner_components.ClickCount(id='clickcount')
+    test_runner_components.ExampleFuncComponentWithHook(id='clickcount')
 ])
 
 if __name__ == '__main__':

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 /**
- * A function component that increments a counter by clicking.
+ * A function component that increments a counter by hook.
  * @param props
  * @returns {JSX.Element}
  * @constructor
  */
-export function ClickCount(props) {
+export function ExampleFuncComponentWithHook(props) {
   const [count, setCount] = useState(0)
 
   return (
@@ -20,7 +20,7 @@ export function ClickCount(props) {
   )
 }
 
-ClickCount.propTypes = {
+ExampleFuncComponentWithHook.propTypes = {
     /**
      * The ID used to identify this component in Dash callbacks.
      */
