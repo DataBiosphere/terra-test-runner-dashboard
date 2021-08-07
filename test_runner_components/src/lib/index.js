@@ -1,8 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import ExampleComponent from './components/ExampleComponent.react';
-import Click from './components/Click'
+import { ClickCount } from './components/ClickCount'
 
 export {
     ExampleComponent,
-    Click
+    ClickCount
 };
