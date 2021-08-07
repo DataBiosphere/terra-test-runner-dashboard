@@ -279,11 +279,10 @@ GitHub.sublime-settings
 /man/
 /R/
 
-/test_runner_components/ExampleComponent.py
-/test_runner_components/metadata.json
-/test_runner_components/package-info.json
-/test_runner_components/test_runner_components.min.js
-/test_runner_components/test_runner_components.min.js.map
+/test_runner_components/*
+!/test_runner_components/__init__.py
+!/test_runner_components/__imports__.py
+
 /src/jl/
 /src/TestRunnerComponents.jl
 /.Rbuildignore
