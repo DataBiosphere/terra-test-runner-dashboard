@@ -1,5 +1,9 @@
+from .ExampleArrowFuncComponentWithHook import ExampleArrowFuncComponentWithHook
 from .ExampleComponent import ExampleComponent
+from .ExampleFuncComponentWithHook import ExampleFuncComponentWithHook
 
 __all__ = [
-    "ExampleComponent"
+    "ExampleArrowFuncComponentWithHook",
+    "ExampleComponent",
+    "ExampleFuncComponentWithHook"
 ]

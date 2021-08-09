@@ -1,12 +1,12 @@
 /* eslint no-magic-numbers: 0 */
 import React, {Component} from 'react';
 
-import { ExampleComponent } from '../lib';
+import { ExampleComponent, ExampleFuncComponentWithHook } from '../lib';
 
 class App extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             value: ''
         };
@@ -24,6 +24,7 @@ class App extends Component {
                     setProps={this.setProps}
                     {...this.state}
                 />
+                <ExampleFuncComponentWithHook id={"TestRunner"} />
             </div>
         )
     }
