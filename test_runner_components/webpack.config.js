@@ -40,15 +40,8 @@ module.exports = (env, argv) => {
     const externals = ('externals' in overrides) ? overrides.externals : ({
         react: 'React',
         'react-dom': 'ReactDOM',
-        'react-native': true,
         'plotly.js': 'Plotly',
         'prop-types': 'PropTypes',
-    });
-
-    const resolve = ({
-        alias: {
-            'react-native$': 'react-native-web'
-        }
     });
 
     return {

@@ -1,7 +1,7 @@
-import test_runner_components
 import dash
-from dash.dependencies import Input, Output
 import dash_html_components as html
+import test_runner_components
+from dash.dependencies import Input, Output
 
 app = dash.Dash(__name__)
 

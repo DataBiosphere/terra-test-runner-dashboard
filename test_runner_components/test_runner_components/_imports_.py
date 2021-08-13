@@ -1,11 +1,11 @@
 from .ExampleArrowFuncComponentWithHook import ExampleArrowFuncComponentWithHook
 from .ExampleComponent import ExampleComponent
 from .ExampleFuncComponentWithHook import ExampleFuncComponentWithHook
-from .TabBar import TabBar
+from .FlexTabBar import FlexTabBar
 
 __all__ = [
     "ExampleArrowFuncComponentWithHook",
     "ExampleComponent",
     "ExampleFuncComponentWithHook",
-    "TabBar"
+    "FlexTabBar"
 ]
