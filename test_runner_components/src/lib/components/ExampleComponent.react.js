@@ -27,7 +27,7 @@ export default class ExampleComponent extends Component {
                          * app server if a callback uses the modified prop as
                          * Input or State.
                          */
-                        e => setProps({ value: e.target.value })
+                        e => setProps({value: e.target.value})
                     }
                 />
             </div>
