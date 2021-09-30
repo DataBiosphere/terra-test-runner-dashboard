@@ -1,0 +1,19 @@
+venv/
+README*
+.gitignore
+.github
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### Emacs backup files
+*.*~
+
+### Mac directory metadata
+.DS_Store
+
+__pycache__/

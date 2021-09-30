@@ -5,10 +5,14 @@ LABEL maintainer="terra-test-runner-dashboard"
 
 USER pn
 
-RUN mkdir -p /home/pn/apps/dash
+RUN mkdir -p /home/pn/apps/testrunner
+
+ADD requirements.txt /home/pn/apps/testrunner/requirements.txt
+ADD dashboard.py /home/pn/apps/testrunner/dashboard.py
+
+WORKDIR /home/pn/apps/testrunner
 
 # Install requirements.txt
-RUN python -m pip install
+RUN pip install -r requirements.txt
 
-ADD dash-app.py /home/pn/apps/dash/dash-app.py
-ADD . /home/pn/apps/dash/.
+ENTRYPOINT ["python", "dashboard.py"]
