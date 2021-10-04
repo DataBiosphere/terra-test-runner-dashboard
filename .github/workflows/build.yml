@@ -15,6 +15,8 @@ name: Bump, Tag, and Publish
 # - BROADBOT_TOKEN - the broadbot token, so we can avoid two reviewer rule on GHA operations
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - 'README.md'
 env:
@@ -53,7 +55,7 @@ jobs:
       - name: Explicitly auth Docker for Artifact Registry
         run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
 
-      - name: Construct docker image name (terra-test-runner-dashboard) and tag
+      - name: Construct docker image name and tag
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
