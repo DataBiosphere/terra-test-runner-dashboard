@@ -53,7 +53,7 @@ jobs:
       - name: Explicitly auth Docker for Artifact Registry
         run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
 
-      - name: Construct docker image name and tag
+      - name: Construct docker image name (terra-test-runner-dashboard) and tag
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
