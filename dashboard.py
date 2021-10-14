@@ -41,12 +41,12 @@ y_int = workspace_wsmtest_today_df['elapsedTime_percentile95'].values
 y_resiliy = [10000, 15000, 12000,
              11000, 20000, 15000,
              11000, 22000, 12000, 10900]
-y_resiliy = workspace_wsmtest_today_df['name'].values
+y_resiliy = workspace_wsmtest_today_df['elapsedTime_percentile95'].values
 
 x = ['DataReferenceLifecycle', 'DeleteGcpContextWithControlledResource', 'EnumerateResources',
      'PrivateControlledGcsBucketLifecycle',
      'BasicAuthenticated', 'CloneReferencedResources', 'CloneBigQueryDataset', 'BasicUnauthenticated', test_name, test_name_1]
-x = workspace_wsmtest_today_df['elapsedTime_percentile95'].values
+x = workspace_wsmtest_today_df['name'].values
 
 # Creating two subplots
 fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
