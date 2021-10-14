@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=nikolaik/python-nodejs
+ARG BASE_CONTAINER=nikolaik/python3.8-nodejs16
 FROM $BASE_CONTAINER
 
 LABEL maintainer="terra-test-runner-dashboard"
