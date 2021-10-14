@@ -7,6 +7,7 @@ USER pn
 
 RUN mkdir -p /home/pn/apps/testrunner
 
+ADD test_runner_components /home/pn/apps/testrunner/test_runner_components
 ADD requirements.txt /home/pn/apps/testrunner/requirements.txt
 ADD dashboard.py /home/pn/apps/testrunner/dashboard.py
 
