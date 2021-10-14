@@ -21,10 +21,10 @@ WORKDIR /home/pn/apps/testrunner
 RUN pip install -r requirements.txt
 
 # Compile custom React.js components under test_runner_components/src/lib/components and convert them into Python modules
-WORKDIR /home/pn/apps/testrunner/test_runner_components
-RUN pip install -r requirements.txt
-USER root
-RUN npm install && npm run build
-USER pn
+# WORKDIR /home/pn/apps/testrunner/test_runner_components
+# RUN pip install -r requirements.txt
+# USER root
+# RUN npm install && npm run build
+# USER pn
 
-WORKDIR /home/pn/apps/testrunner
+# WORKDIR /home/pn/apps/testrunner
