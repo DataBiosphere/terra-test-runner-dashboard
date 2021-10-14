@@ -15,21 +15,22 @@ SELECT DISTINCT name FROM `terra-kernel-k8s.test_runner_results.testScriptResult
 
 test_name_df = bq.query(SELECT_TEST_NAME).to_dataframe()
 test_name = test_name_df.iloc[0]['name']
+test_name_1 = test_name_df.iloc[1]['name']
 
 y_perf = [1.3586, 2.2623000000000002, 4.9821999999999997, 6.5096999999999996,
           7.4812000000000003, 7.5133000000000001, 15.2148, 17.520499999999998,
-          22.3]
+          22.3, 4.5]
 y_int = [9.919999999998, 8.570000000007, 6.619999999995,
          78.529999999999, 14.29999999999, 9.020000000004,
-         66.179999999993, 122.3, 56.2]
+         66.179999999993, 122.3, 56.2, 45.0]
 
 y_resiliy = [10000, 15000, 12000,
              11000, 20000, 15000,
-             11000, 22000, 12000]
+             11000, 22000, 12000, 10900]
 
 x = ['DataReferenceLifecycle', 'DeleteGcpContextWithControlledResource', 'EnumerateResources',
      'PrivateControlledGcsBucketLifecycle',
-     'BasicAuthenticated', 'CloneReferencedResources', 'CloneBigQueryDataset', 'BasicUnauthenticated', test_name]
+     'BasicAuthenticated', 'CloneReferencedResources', 'CloneBigQueryDataset', 'BasicUnauthenticated', test_name, test_name_1]
 
 # Creating two subplots
 fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
