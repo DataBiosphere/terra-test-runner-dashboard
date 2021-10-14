@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from google.cloud import bigquery
 
-bq = bigquery.Client()
+bq = bigquery.Client(project="terra-kernel-k8s")
 
 SELECT_TEST_NAME = '''
 SELECT DISTINCT name FROM `terra-kernel-k8s.test_runner_results.testScriptResults`
