@@ -16,3 +16,6 @@ WORKDIR /home/pn/apps/testrunner
 # Install requirements.txt
 RUN pip install -r requirements.txt
 
+# Get around some breaking issue with installing latest version of google-cloud-bigquery from requirements.txt.
+RUN pip install google-cloud-bigquery==2.28.1
+
