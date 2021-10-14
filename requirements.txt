@@ -1,7 +1,8 @@
 cookiecutter>=1.7.3
 dash>=2.0.0
 dash_bootstrap_components>=0.13.*
-google-cloud-bigquery[bqstorage,pandas]>=2.25.*
+google-cloud-bigquery[pandas]>=2.6.*
+google-cloud-bigquery-storage[pyarrow]>=2.9.*
 pandas>=1.3.1
 plotly~=5.1.0
 numpy~=1.21.1
