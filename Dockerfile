@@ -17,8 +17,11 @@ ADD dashboard.py /home/pn/apps/testrunner/dashboard.py
 
 WORKDIR /home/pn/apps/testrunner
 
+USER root
 # Install requirements.txt
 RUN pip install -r requirements.txt
+
+USER pn
 
 # Compile custom React.js components under test_runner_components/src/lib/components and convert them into Python modules
 # WORKDIR /home/pn/apps/testrunner/test_runner_components
