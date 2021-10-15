@@ -11,9 +11,9 @@ USER pn
 
 RUN mkdir -p /home/pn/apps/testrunner
 
-ADD test_runner_components /home/pn/apps/testrunner/test_runner_components
-ADD requirements.txt /home/pn/apps/testrunner/requirements.txt
-ADD dashboard.py /home/pn/apps/testrunner/dashboard.py
+ADD --chown=pn:pn test_runner_components /home/pn/apps/testrunner/test_runner_components
+ADD --chown=pn:pn requirements.txt /home/pn/apps/testrunner/requirements.txt
+ADD --chown=pn:pn dashboard.py /home/pn/apps/testrunner/dashboard.py
 
 WORKDIR /home/pn/apps/testrunner
 
@@ -27,8 +27,8 @@ USER root
 RUN pip install -r requirements.txt
 
 # Compile custom React.js components under test_runner_components/src/lib/components and convert them into Python modules
+USER pn
 WORKDIR /home/pn/apps/testrunner/test_runner_components
 RUN npm install && npm run build
 
-USER pn
 WORKDIR /home/pn/apps/testrunner
