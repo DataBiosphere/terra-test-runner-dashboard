@@ -31,4 +31,9 @@ USER pn
 WORKDIR /home/pn/apps/testrunner/test_runner_components
 RUN npm install && npm run build
 
+# Install custom dashboard libraries
+USER root
 WORKDIR /home/pn/apps/testrunner
+pip install ./test_runner_components/
+
+USER pn
