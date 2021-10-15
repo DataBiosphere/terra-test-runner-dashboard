@@ -11,7 +11,8 @@ USER pn
 
 RUN mkdir -p /home/pn/apps/testrunner
 
-COPY --chown=pn:pn test_runner_components requirements.txt dashboard.py /home/pn/apps/testrunner/
+ADD  --chown=pn:pn test_runner_components /home/pn/apps/testrunner/test_runner_components
+COPY --chown=pn:pn requirements.txt dashboard.py /home/pn/apps/testrunner/
 
 WORKDIR /home/pn/apps/testrunner
 
