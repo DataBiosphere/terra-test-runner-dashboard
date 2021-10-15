@@ -9,10 +9,6 @@ from google.cloud import bigquery
 
 bq = bigquery.Client(project="terra-kernel-k8s")
 
-SELECT_TEST_NAME = '''
-SELECT DISTINCT name FROM `terra-kernel-k8s.test_runner_results.testScriptResults`
-'''
-
 SELECT_workspace_wsmtest_today = '''
 SELECT t.startTime, name, elapsedTime_percentile95 
  FROM `terra-kernel-k8s.test_runner_results.testScriptResults` r 
@@ -23,31 +19,13 @@ SELECT t.startTime, name, elapsedTime_percentile95
  ORDER BY t.startTime, r.elapsedTime_percentile95
 '''
 
-test_name_df = bq.query(SELECT_TEST_NAME).to_dataframe()
-test_name = test_name_df.iloc[0]['name']
-test_name_1 = test_name_df.iloc[1]['name']
-
 workspace_wsmtest_today_df = bq.query(SELECT_workspace_wsmtest_today).to_dataframe()
 
-y_perf = [1.3586, 2.2623000000000002, 4.9821999999999997, 6.5096999999999996,
-          7.4812000000000003, 7.5133000000000001, 15.2148, 17.520499999999998,
-          22.3, 4.5]
 y_perf = workspace_wsmtest_today_df.iloc[21:27]['elapsedTime_percentile95'].values
 
-y_int = [9.919999999998, 8.570000000007, 6.619999999995,
-         78.529999999999, 14.29999999999, 9.020000000004,
-         66.179999999993, 122.3, 56.2, 45.0]
 y_int = workspace_wsmtest_today_df.iloc[0:21]['elapsedTime_percentile95'].values
 
-y_resiliy = [10000, 15000, 12000,
-             11000, 20000, 15000,
-             11000, 22000, 12000, 10900]
 y_resiliy = workspace_wsmtest_today_df.iloc[27:28]['elapsedTime_percentile95'].values
-
-x = ['DataReferenceLifecycle', 'DeleteGcpContextWithControlledResource', 'EnumerateResources',
-     'PrivateControlledGcsBucketLifecycle',
-     'BasicAuthenticated', 'CloneReferencedResources', 'CloneBigQueryDataset', 'BasicUnauthenticated', test_name, test_name_1]
-x = workspace_wsmtest_today_df['name'].values
 
 x_perf = workspace_wsmtest_today_df.iloc[21:27]['name'].values
 x_int = workspace_wsmtest_today_df.iloc[0:21]['name'].values
@@ -74,7 +52,8 @@ fig.append_trace(go.Bar(
 ), 1, 1)
 
 fig.append_trace(go.Bar(
-    x=y_int, y=x_int,
+    x=y_int,
+    y=x_int,
     marker=dict(
         color='rgba(255,117,255,153)',
         line=dict(
@@ -87,7 +66,8 @@ fig.append_trace(go.Bar(
 ), 1, 2)
 
 fig.append_trace(go.Bar(
-    x=y_resiliy, y=x_resiliy,
+    x=y_resiliy,
+    y=x_resiliy,
     marker=dict(
         color='rgba(106,255,255,153)',
         line=dict(
@@ -157,20 +137,22 @@ fig.update_layout(
 
 annotations = []
 
-y_s = np.rint(y_perf,)
+y_s = np.rint(y_perf)
 y_nw = np.rint(y_int)
 y_r = np.rint(y_resiliy)
 
 # Adding labels
-for ydn, yd, yr, xd in zip(y_nw, y_s, y_r, x):
+for yd, xd in zip(y_s, x_perf):
     # labeling the perf test
     annotations.append(dict(xref='x2', yref='y2',
-                            y=xd, x=ydn + 10,
-                            text='{:,}'.format(ydn) + 'ms',
+                            y=xd, x=yd + 10,
+                            text='{:,}'.format(yd) + 'ms',
                             font=dict(family='Arial', size=12,
                                       color='rgba(206,206,206,255)'  # 'rgb(128, 0, 128)'
                                       ),
                             showarrow=False))
+
+for yd, xd in zip(y_nw, x_int):
     # labeling the integration test
     annotations.append(dict(xref='x1', yref='y1',
                             y=xd, x=yd + 3,
@@ -179,14 +161,17 @@ for ydn, yd, yr, xd in zip(y_nw, y_s, y_r, x):
                                       color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
                                       ),
                             showarrow=False))
+for yd, xd in zip(y_r, x_resiliy):
     # labeling the resiliency test
     annotations.append(dict(xref='x3', yref='y3',
-                            y=xd, x=yr,
-                            text=str(yr) + 'ms',
+                            y=xd, x=yd,
+                            text=str(yd) + 'ms',
                             font=dict(family='Arial', size=12,
                                       color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
                                       ),
                             showarrow=False))
+
+
 # Source
 annotations.append(dict(xref='paper', yref='paper',
                         x=-0.2, y=-0.109,
