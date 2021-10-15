@@ -17,17 +17,19 @@ ADD dashboard.py /home/pn/apps/testrunner/dashboard.py
 
 WORKDIR /home/pn/apps/testrunner
 
-USER root
 # Install requirements.txt
+# NB: During image build, you might get the following warining.
+#  The warning can be ignored since we don't need seperate Python environments to run the app.
+#  WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour
+#           with the system package manager. It is recommended to use a virtual environment instead:
+#           https://pip.pypa.io/warnings/venv
+USER root
 RUN pip install -r requirements.txt
 
 USER pn
 
 # Compile custom React.js components under test_runner_components/src/lib/components and convert them into Python modules
-# WORKDIR /home/pn/apps/testrunner/test_runner_components
-# RUN pip install -r requirements.txt
-# USER root
-# RUN npm install && npm run build
-# USER pn
+WORKDIR /home/pn/apps/testrunner/test_runner_components
+RUN npm install && npm run build
 
-# WORKDIR /home/pn/apps/testrunner
+WORKDIR /home/pn/apps/testrunner
