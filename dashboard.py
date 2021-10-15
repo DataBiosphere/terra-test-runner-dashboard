@@ -5,21 +5,31 @@ from dash import html
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from google.cloud import bigquery
 
-y_perf = [1.3586, 2.2623000000000002, 4.9821999999999997, 6.5096999999999996,
-          7.4812000000000003, 7.5133000000000001, 15.2148, 17.520499999999998
-          ]
-y_int = [9.919999999998, 8.570000000007, 6.619999999995,
-         78.529999999999, 14.29999999999, 9.020000000004,
-         66.179999999993, 122.3]
+bq = bigquery.Client(project="terra-kernel-k8s")
 
-y_resiliy = [10000, 15000, 12000,
-             11000, 20000, 15000,
-             11000, 22000]
+SELECT_workspace_wsmtest_today = '''
+SELECT t.startTime, name, elapsedTime_percentile95 
+ FROM `terra-kernel-k8s.test_runner_results.testScriptResults` r 
+   INNER JOIN 
+    `terra-kernel-k8s.test_runner_results.testRun` t 
+   ON r.testRun_id = t.id
+ WHERE t.server_name = 'workspace-wsmtest' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM t.startTime)
+ ORDER BY t.startTime, r.elapsedTime_percentile95
+'''
 
-x = ['DataReferenceLifecycle', 'DeleteGcpContextWithControlledResource', 'EnumerateResources',
-     'PrivateControlledGcsBucketLifecycle',
-     'BasicAuthenticated', 'CloneReferencedResources', 'CloneBigQueryDataset', 'BasicUnauthenticated']
+workspace_wsmtest_today_df = bq.query(SELECT_workspace_wsmtest_today).to_dataframe()
+
+y_perf = workspace_wsmtest_today_df.iloc[21:27]['elapsedTime_percentile95'].values
+
+y_int = workspace_wsmtest_today_df.iloc[0:21]['elapsedTime_percentile95'].values
+
+y_resiliy = workspace_wsmtest_today_df.iloc[27:28]['elapsedTime_percentile95'].values
+
+x_perf = workspace_wsmtest_today_df.iloc[21:27]['name'].values
+x_int = workspace_wsmtest_today_df.iloc[0:21]['name'].values
+x_resiliy = workspace_wsmtest_today_df.iloc[27:28]['name'].values
 
 # Creating two subplots
 fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
@@ -27,7 +37,7 @@ fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
 
 fig.append_trace(go.Bar(
     x=y_perf,
-    y=x,
+    y=x_perf,
     hoverlabel={"bgcolor": "rgb(0, 0, 0)", "font": {"color": "rgb(255, 255, 255)"}},
     hovertemplate="%{y}<br>%{x} ms",
     marker=dict(
@@ -42,7 +52,8 @@ fig.append_trace(go.Bar(
 ), 1, 1)
 
 fig.append_trace(go.Bar(
-    x=y_int, y=x,
+    x=y_int,
+    y=x_int,
     marker=dict(
         color='rgba(255,117,255,153)',
         line=dict(
@@ -55,7 +66,8 @@ fig.append_trace(go.Bar(
 ), 1, 2)
 
 fig.append_trace(go.Bar(
-    x=y_resiliy, y=x,
+    x=y_resiliy,
+    y=x_resiliy,
     marker=dict(
         color='rgba(106,255,255,153)',
         line=dict(
@@ -125,20 +137,22 @@ fig.update_layout(
 
 annotations = []
 
-y_s = np.round(y_perf, decimals=2)
+y_s = np.rint(y_perf)
 y_nw = np.rint(y_int)
 y_r = np.rint(y_resiliy)
 
 # Adding labels
-for ydn, yd, yr, xd in zip(y_nw, y_s, y_r, x):
+for yd, xd in zip(y_s, x_perf):
     # labeling the perf test
     annotations.append(dict(xref='x2', yref='y2',
-                            y=xd, x=ydn + 10,
-                            text='{:,}'.format(ydn) + 'ms',
+                            y=xd, x=yd + 10,
+                            text='{:,}'.format(yd) + 'ms',
                             font=dict(family='Arial', size=12,
                                       color='rgba(206,206,206,255)'  # 'rgb(128, 0, 128)'
                                       ),
                             showarrow=False))
+
+for yd, xd in zip(y_nw, x_int):
     # labeling the integration test
     annotations.append(dict(xref='x1', yref='y1',
                             y=xd, x=yd + 3,
@@ -147,14 +161,17 @@ for ydn, yd, yr, xd in zip(y_nw, y_s, y_r, x):
                                       color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
                                       ),
                             showarrow=False))
+for yd, xd in zip(y_r, x_resiliy):
     # labeling the resiliency test
     annotations.append(dict(xref='x3', yref='y3',
-                            y=xd, x=yr,
-                            text=str(yr) + 'ms',
+                            y=xd, x=yd,
+                            text=str(yd) + 'ms',
                             font=dict(family='Arial', size=12,
                                       color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
                                       ),
                             showarrow=False))
+
+
 # Source
 annotations.append(dict(xref='paper', yref='paper',
                         x=-0.2, y=-0.109,
