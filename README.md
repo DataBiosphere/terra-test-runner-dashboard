@@ -42,7 +42,7 @@ In the `test_runner_components` directory, run the following command and point y
 python usage.py
 ```
   * In case it failes with `ImportError: No module named 'yaml'`
-    * run `sudo python3 -m pip install pyyaml`)
+    * run `sudo python3 -m pip install pyyaml`
 
   * If all goes well, your browser should render the `ExcampleComponent` and you should be able to interact with the text field and observe corresponding response to `onchange` events.
 
