@@ -2,8 +2,15 @@
 This is the codebase for Terra Test Runner Dashboard.
 
 # Setting up development environment for this repo
-* Download [PyCharm Professional](https://www.jetbrains.com/pycharm/).
-* Make sure to have the latest [Python 3](https://www.python.org/download/releases/3.0/) installed.
+* Install [PyCharm Professional](https://www.jetbrains.com/pycharm/)
+* You will need Python version 3. Install the latest version of Python if needed. Currently, the latest version is [3.10.0](https://www.python.org/downloads/) for macOS.
+  * [How to set up Python 3 as default on macOS](https://opensource.com/article/19/5/python-3-default-mac)
+* Install the latest version of [pip](https://pip.pypa.io/en/stable/installation/) if needed
+  * To upgrade `pip`, run `python3 -m pip install --upgrade pip`
+* Update gcloud components
+  * Config gcloud to use the latest version of Python, run `export CLOUDSDK_PYTHON=/usr/bin/python3`.
+  * Run `gcloud components update`
+* `npm` is needed. Using Node version manager to install the latest version of [`npm`](https://nodejs.org/en/download/)
 * Import this repo into `PyCharm` as a `Flask` project with the following settings:
   * Select `Virtualenv` as New environment
   * Use default `Location`
@@ -26,7 +33,7 @@ npm install
 ```commandline
 npm run build
 ```
-
+  * In case of build failure related to `dash`, install `dash` by run `pip install dash`
 # Test your environment
 
 In the `test_runner_components` directory, run the following command and point your browser to `https://localhost:8050`
@@ -34,8 +41,10 @@ In the `test_runner_components` directory, run the following command and point y
 ```commandline
 python usage.py
 ```
+  * In case it failes with `ImportError: No module named 'yaml'`
+    * run `sudo python3 -m pip install pyyaml`
 
-If all goes well, your browser should render the `ExcampleComponent` and you should be able to interact with the text field and observe corresponding response to `onchange` events.
+  * If all goes well, your browser should render the `ExcampleComponent` and you should be able to interact with the text field and observe corresponding response to `onchange` events.
 
 # Deployment of Main `Dash` Application
 
