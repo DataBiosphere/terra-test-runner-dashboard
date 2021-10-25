@@ -5,7 +5,9 @@ on:
 
 jobs:
   call-sync-component-version:
-    uses: DataBiosphere/terra-test-runner/.github/workflows/sync-component-version.yml@QA-1612
-    with:
-      env_type: personal
-      environment: wsmtest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: DataBiosphere/terra-test-runner/.github/actions/sync-component-version@QA-1612
+        with:
+          env_type: personal
+          environment: wsmtest
