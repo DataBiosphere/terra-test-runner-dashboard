@@ -7,7 +7,7 @@ jobs:
   call-sync-component-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Sync versions 1
+      - name: Sync versions 2
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-component-version@QA-1612
         with:
           env_type: personal
