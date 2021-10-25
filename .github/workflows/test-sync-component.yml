@@ -6,17 +6,11 @@ on:
 jobs:
   call-sync-component-version:
     runs-on: ubuntu-latest
-    environment:
-      name: testrunner
 
     steps:
-      - name: Environment
-        run: |
-          echo ${{ secrets.TENV_SECRET }}
-
       - name: Sync versions 3
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-component-version@QA-1612
         with:
           env_type: personal
           environment: wsmtest
-          token: ''
+          token: ${{ secrets.BROADBOT_TOKEN }}
