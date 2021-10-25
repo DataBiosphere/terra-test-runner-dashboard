@@ -1,0 +1,15 @@
+name: Call sync component version workflow
+
+on:
+  push
+
+jobs:
+  call-sync-component-version:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: DataBiosphere/terra-test-runner/.github/workflows/sync-component-version.yml@QA-1612
+        with:
+          env_type: personal
+          environment: wsmtest
