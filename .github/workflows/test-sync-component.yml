@@ -12,5 +12,5 @@ jobs:
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-component-version@QA-1612
         with:
           env_type: live
-          environment: alpha
+          environment: dev
           token: ${{ secrets.BROADBOT_TOKEN }}
