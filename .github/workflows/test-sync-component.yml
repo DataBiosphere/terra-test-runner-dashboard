@@ -11,6 +11,6 @@ jobs:
       - name: Sync versions 12
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-component-version@QA-1612
         with:
-          env_type: personal
-          environment: wsmtest
+          env_type: live
+          environment: alpha
           token: ${{ secrets.BROADBOT_TOKEN }}
