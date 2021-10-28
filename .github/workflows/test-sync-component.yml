@@ -11,7 +11,7 @@ jobs:
       - name: Sync versions 58
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-terra-services-version@QA-1612
         with:
-          environment: wsmtest
+          environment: dev
           token: ${{ secrets.BROADBOT_TOKEN }}
 
       - name: Echo terra version
