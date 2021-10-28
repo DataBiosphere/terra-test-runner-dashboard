@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Sync versions 55
+      - name: Sync versions 56
         uses: DataBiosphere/terra-test-runner/.github/actions/sync-terra-services-version@QA-1612
         with:
           env_type: live
