@@ -66,13 +66,31 @@ module.exports = (env, argv) => {
                     },
                 },
                 {
+                    test: /\.scss$/,
+                    exclude: /node_modules/,
+                    use: [
+                        {
+                            loader: 'style-loader',
+                        },
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                sourceMap: true,
+                            },
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: true,
+                            },
+                        },
+                    ],
+                },
+                {
                     test: /\.css$/,
                     use: [
                         {
                             loader: 'style-loader',
-                            options: {
-                                insertAt: 'top'
-                            }
                         },
                         {
                             loader: 'css-loader',
@@ -94,7 +112,7 @@ module.exports = (env, argv) => {
                 })
             ],
             splitChunks: {
-                name: true,
+                name: false,
                 cacheGroups: {
                     async: {
                         chunks: 'async',
