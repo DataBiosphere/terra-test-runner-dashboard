@@ -9,27 +9,38 @@ from google.cloud import bigquery
 
 bq = bigquery.Client(project="terra-kernel-k8s")
 
-SELECT_workspace_wsmtest_today = '''
-SELECT t.startTime, name, elapsedTime_percentile95 
- FROM `terra-kernel-k8s.test_runner_results.testScriptResults` r 
-   INNER JOIN 
-    `terra-kernel-k8s.test_runner_results.testRun` t 
-   ON r.testRun_id = t.id
- WHERE t.server_name = 'workspace-wsmtest' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM t.startTime)
- ORDER BY t.startTime, r.elapsedTime_percentile95
+SELECT_workspace_wsmtest_integration_today = '''
+SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
+ FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
+ WHERE testSuiteName = 'FullIntegration' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
+ ORDER BY percentile95
 '''
 
-workspace_wsmtest_today_df = bq.query(SELECT_workspace_wsmtest_today).to_dataframe()
+SELECT_workspace_wsmtest_perf_today = '''
+SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
+ FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
+ WHERE testSuiteName = 'BasicPerf' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
+ ORDER BY percentile95
+'''
 
-y_perf = workspace_wsmtest_today_df.iloc[21:27]['elapsedTime_percentile95'].values
+SELECT_workspace_wsmtest_resiliency_today = '''
+SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
+ FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
+ WHERE testSuiteName = 'BasicResiliency' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
+ ORDER BY percentile95
+'''
 
-y_int = workspace_wsmtest_today_df.iloc[0:21]['elapsedTime_percentile95'].values
+workspace_wsmtest_integration_today_df = bq.query(SELECT_workspace_wsmtest_integration_today).to_dataframe()
+workspace_wsmtest_perf_today_df = bq.query(SELECT_workspace_wsmtest_perf_today).to_dataframe()
+workspace_wsmtest_resiliency_today_df = bq.query(SELECT_workspace_wsmtest_resiliency_today).to_dataframe()
 
-y_resiliy = workspace_wsmtest_today_df.iloc[27:28]['elapsedTime_percentile95'].values
+y_perf = workspace_wsmtest_perf_today_df['percentile95'].values
+y_int = workspace_wsmtest_integration_today_df['percentile95'].values
+y_resiliy = workspace_wsmtest_resiliency_today_df['percentile95'].values
 
-x_perf = workspace_wsmtest_today_df.iloc[21:27]['name'].values
-x_int = workspace_wsmtest_today_df.iloc[0:21]['name'].values
-x_resiliy = workspace_wsmtest_today_df.iloc[27:28]['name'].values
+x_perf = workspace_wsmtest_perf_today_df['testScriptName'].values
+x_int = workspace_wsmtest_integration_today_df['testScriptName'].values
+x_resiliy = workspace_wsmtest_resiliency_today_df['testScriptName'].values
 
 # Creating two subplots
 fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
@@ -244,4 +255,4 @@ app.layout = dbc.Container(
 )
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0')
+    app.run_server(host='0.0.0.0', port=443, ssl_context='adhoc')
