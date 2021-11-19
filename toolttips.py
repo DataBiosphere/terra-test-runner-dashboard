@@ -8,52 +8,32 @@ from sqlalchemy.engine import create_engine
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_bigquery import ARRAY, DATE, RECORD, STRING
 
-# engine = create_engine('bigquery://terra-kernel-k8s', credentials_path='/Users/ichang/Downloads/terra-kernel-k8s-bd7b02311de9.json')
-# streamtable = Table('stream_dataset.streamtable', MetaData(bind=engine), autoload=True)
-# print(streamtable)
-# print(select([func.count('*')], from_obj=streamtable).scalar())
+# engine = create_engine('bigquery://terra-kernel-k8s',
+# credentials_path='/Users/ichang/Downloads/terra-kernel-k8s-bd7b02311de9.json') streamtable = Table(
+# 'stream_dataset.streamtable', MetaData(bind=engine), autoload=True) print(streamtable) print(select([func.count(
+# '*')], from_obj=streamtable).scalar())
+from app import app
+from app.bigquery.models.User import User
 
-app = dash.Dash(__name__)
-app.server.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'bigquery://terra-kernel-k8s/stream_dataset?credentials_path=/Users/ichang/Downloads/terra-kernel-k8s-bd7b02311de9.json'
-db = SQLAlchemy(app.server)
-
-
-class User(db.Model):
-    __tablename__ = "streamtable"
-    id = db.Column(STRING, primary_key=True, nullable=True)
-    first_name = db.Column(STRING, nullable=True)
-    last_name = db.Column(STRING, nullable=True)
-    dob = db.Column(DATE, nullable=True)
-    addresses = db.Column(ARRAY(
-        RECORD(
-            status=STRING,
-            address=STRING,
-            city=STRING,
-            state=STRING,
-            zip=STRING,
-            numberOfYears=STRING
-        )
-    ), nullable=True)
-
-    def __repr__(self):
-        return '<User %r>' % self.first_name
+# app = dash.Dash(__name__)
+# app.server.config[
+#    'SQLALCHEMY_DATABASE_URI'] = 'bigquery://terra-kernel-k8s/stream_dataset?credentials_path=/Users/ichang/Downloads/terra-kernel-k8s-bd7b02311de9.json'
+# db = SQLAlchemy(app.server)
 
 
-u1 = User(id='2', first_name='J.', last_name='Thomas', addresses=[{'status': 'active', 'address': '105 Broadway',
-                                                                   'city': 'Cambridge', 'state': 'MA', 'zip': '02142',
-                                                                   'numberOfYears': '3'},
-                                                                  {'status': 'inactive', 'address': '40 Winter St',
-                                                                   'city': 'Cambridge', 'state': 'MA', 'zip': '02141',
-                                                                   'numberOfYears': '1'}
-                                                                  ]
-)
-db.session.add(u1)
-db.session.commit()
+# u1 = User(id='2', first_name='J.', last_name='Thomas', addresses=[{'status': 'active', 'address': '105 Broadway',
+#                                                                   'city': 'Cambridge', 'state': 'MA', 'zip': '02142',
+#                                                                   'numberOfYears': '3'},
+#                                                                  {'status': 'inactive', 'address': '40 Winter St',
+#                                                                   'city': 'Cambridge', 'state': 'MA', 'zip': '02141',
+#                                                                   'numberOfYears': '1'}
+#                                                                  ]
+#)
+#db.session.add(u1)
+#db.session.commit()
 
-#uq = User.query.filter_by(last_name='Thomas').first()
-#print(uq.id)
-#print(len(uq.addresses))
+user = User.query.filter_by(last_name='Thomas').first()
+print(user.id)
 
 app.layout = html.Div([
     html.Div([html.Div("Test tooltip")],

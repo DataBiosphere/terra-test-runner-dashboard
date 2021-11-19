@@ -1,15 +1,16 @@
-from flask_sqlalchemy.model import Model
-from sqlalchemy import Column
 from sqlalchemy_bigquery import ARRAY, DATE, RECORD, STRING
 
+from app import db
+
+
 # ORM Model
-class Person(Model):
+class User(db.Model):
     __tablename__ = "streamtable"
-    id = Column(STRING, nullable=True)
-    first_name = Column(STRING, nullable=True)
-    last_name = Column(STRING, nullable=True)
-    dob = Column(DATE, nullable=True)
-    addresses = Column(ARRAY(
+    id = db.Column(STRING, primary_key=True, nullable=True)
+    first_name = db.Column(STRING, nullable=True)
+    last_name = db.Column(STRING, nullable=True)
+    dob = db.Column(DATE, nullable=True)
+    addresses = db.Column(ARRAY(
         RECORD(
             status=STRING,
             address=STRING,
@@ -21,4 +22,4 @@ class Person(Model):
     ), nullable=True)
 
     def __repr__(self):
-        return '<Person %r>' % self.first_name
+        return '<User %r>' % self.first_name
