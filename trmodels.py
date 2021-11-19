@@ -2,7 +2,7 @@ from flask_sqlalchemy.model import Model
 from sqlalchemy import Column
 from sqlalchemy_bigquery import ARRAY, DATE, RECORD, STRING
 
-
+# ORM Model
 class Person(Model):
     __tablename__ = "streamtable"
     id = Column(STRING, nullable=True)
