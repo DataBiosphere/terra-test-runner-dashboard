@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const WebpackDashDynamicImport = require('@plotly/webpack-dash-dynamic-import');
@@ -66,7 +67,7 @@ module.exports = (env, argv) => {
                     },
                 },
                 {
-                    test: /\.scss$/,
+                    test: /\.s(a|c)ss$/,
                     exclude: /node_modules/,
                     use: [
                         {
@@ -94,6 +95,30 @@ module.exports = (env, argv) => {
                         },
                         {
                             loader: 'css-loader',
+                        },
+                    ],
+                },
+                {
+                    test: /\.(woff(2)?)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 10000,
+                                mimetype: 'application/font-woff',
+                                outputPath: 'file'
+                            }
+                        },
+                    ],
+                },
+                {
+                    test: /\.(eot|svg|ttf)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                outputPath: 'file'
+                            }
                         },
                     ],
                 },
@@ -135,6 +160,10 @@ module.exports = (env, argv) => {
             new webpack.SourceMapDevToolPlugin({
                 filename: '[file].map',
                 exclude: ['async-plotlyjs']
+            }),
+            new MiniCssExtractPlugin({
+                filename: '[name].css',
+                chunkFilename: '[id].css'
             })
         ]
     }
