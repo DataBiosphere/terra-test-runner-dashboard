@@ -1,1 +1,1 @@
-__all__ = ["gcp"]
+print(f"Init {__name__}")
