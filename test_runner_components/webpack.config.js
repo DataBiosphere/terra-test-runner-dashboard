@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
     }
 
     let filename = (overrides.output || {}).filename;
-    if(!filename) {
+    if (!filename) {
         const modeSuffix = mode === 'development' ? 'dev' : 'min';
         filename = `${dashLibraryName}.${modeSuffix}.js`;
     }
@@ -67,8 +67,7 @@ module.exports = (env, argv) => {
                     },
                 },
                 {
-                    test: /\.s(a|c)ss$/,
-                    exclude: /node_modules/,
+                    test: /\.s[ac]ss$/i,
                     use: [
                         {
                             loader: 'style-loader',
@@ -82,13 +81,14 @@ module.exports = (env, argv) => {
                         {
                             loader: 'sass-loader',
                             options: {
+                                implementation: require("sass"),
                                 sourceMap: true,
-                            },
+                            }
                         },
                     ],
                 },
                 {
-                    test: /\.css$/,
+                    test: /\.css$/i,
                     use: [
                         {
                             loader: 'style-loader',
@@ -162,8 +162,7 @@ module.exports = (env, argv) => {
                 exclude: ['async-plotlyjs']
             }),
             new MiniCssExtractPlugin({
-                filename: '[name].css',
-                chunkFilename: '[id].css'
+                filename: 'styles.css',
             })
         ]
     }
