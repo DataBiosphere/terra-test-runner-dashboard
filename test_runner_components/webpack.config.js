@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const WebpackDashDynamicImport = require('@plotly/webpack-dash-dynamic-import');
@@ -28,7 +29,7 @@ module.exports = (env, argv) => {
     }
 
     let filename = (overrides.output || {}).filename;
-    if(!filename) {
+    if (!filename) {
         const modeSuffix = mode === 'development' ? 'dev' : 'min';
         filename = `${dashLibraryName}.${modeSuffix}.js`;
     }
@@ -66,16 +67,58 @@ module.exports = (env, argv) => {
                     },
                 },
                 {
-                    test: /\.css$/,
+                    test: /\.s[ac]ss$/i,
                     use: [
                         {
                             loader: 'style-loader',
-                            options: {
-                                insertAt: 'top'
-                            }
                         },
                         {
                             loader: 'css-loader',
+                            options: {
+                                sourceMap: true,
+                            },
+                        },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                implementation: require("sass"),
+                                sourceMap: true,
+                            }
+                        },
+                    ],
+                },
+                {
+                    test: /\.css$/i,
+                    use: [
+                        {
+                            loader: 'style-loader',
+                        },
+                        {
+                            loader: 'css-loader',
+                        },
+                    ],
+                },
+                {
+                    test: /\.(woff(2)?)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 10000,
+                                mimetype: 'application/font-woff',
+                                outputPath: 'file'
+                            }
+                        },
+                    ],
+                },
+                {
+                    test: /\.(eot|svg|ttf)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                outputPath: 'file'
+                            }
                         },
                     ],
                 },
@@ -94,7 +137,7 @@ module.exports = (env, argv) => {
                 })
             ],
             splitChunks: {
-                name: true,
+                name: false,
                 cacheGroups: {
                     async: {
                         chunks: 'async',
@@ -117,6 +160,9 @@ module.exports = (env, argv) => {
             new webpack.SourceMapDevToolPlugin({
                 filename: '[file].map',
                 exclude: ['async-plotlyjs']
+            }),
+            new MiniCssExtractPlugin({
+                filename: 'styles.css',
             })
         ]
     }
