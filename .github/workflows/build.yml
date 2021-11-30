@@ -14,12 +14,13 @@ name: Bump, Tag, and Publish
 # - GCP_PUBLISH_KEY_B64 - SA key (Base64-encoded JSON string) for publishing to dsp-artifact-registry
 # - BROADBOT_TOKEN - the broadbot token, so we can avoid two reviewer rule on GHA operations
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'README.md'
-      - '**.log'
+  push
+#  push:
+#    branches:
+#      - main
+#    paths-ignore:
+#      - 'README.md'
+#      - '**.log'
 env:
   GOOGLE_PROJECT: dsp-artifact-registry
   # Name of the app-specific Docker repository configured in GOOGLE_PROJECT
