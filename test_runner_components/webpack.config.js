@@ -180,6 +180,9 @@ module.exports = (env, argv) => {
             //    template: './src/lib/index.ejs',
             //    filename: 'index.html'
             // }),
-        ]
+        ],
+        resolve: {
+            extensions: ['.js', '.jsx']
+        }
     }
 };

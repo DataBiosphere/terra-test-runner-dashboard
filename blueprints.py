@@ -9,13 +9,17 @@ if __name__ == '__main__':
     app = app.start("trdash")
 
     app.layout = html.Div([
-        html.Div([html.Div("Test tooltip")],
-                 **{'data-for': 'element-id1', 'data-tip': 'true'}),
-        test_runner_components.TooltipsTheme1(
-            id='input',
-            label='my-label'
+        #        html.Div([html.Div("Test tooltip")],
+        #                 **{'data-for': 'element-id1', 'data-tip': 'true'}),
+        #        test_runner_components.TooltipsTheme1(
+        #            id='input',
+        #            label='my-label'
+        #        ),
+        test_runner_components.MainDash(
+            id='main-dash',
+            isPrintModal=False
         )
-    ])
+    ], id="root")
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
 

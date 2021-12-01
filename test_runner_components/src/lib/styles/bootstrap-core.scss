@@ -1,0 +1,42 @@
+// Shared styles and fonts.
+@import "~bootstrap/scss/functions";
+
+html, body {
+    font-size: 14px;
+}
+
+$blue: #0051D8;
+$body-color: #1B1B1B;
+$body-bg: #F0F0F0;
+$link-decoration: underline;
+$link-hover-decoration: underline;
+$code-color: inherit;
+$table-cell-padding-sm: .4rem;
+$enable-validation-icons: false;
+$popover-bg: #F9FAFB;
+$popover-arrow-color: $popover-bg;
+$popover-border-width: 2px;
+$popover-border-color: rgb(204, 204, 204);
+$popover-box-shadow: 0 .25rem .4rem rgba(#000, .1);
+$dropdown-link-hover-bg: #DDD;
+
+$input-btn-padding-y: 4rem / 14;
+$input-btn-padding-x: 8rem / 14;
+$input-btn-padding-y-sm: .25rem;
+$input-btn-padding-x-sm: .5rem;
+$input-btn-padding-y-lg: .25rem;
+$input-btn-padding-x-lg: 0.75rem;
+
+// Font sizes.
+$font-size-base: 1rem;
+$text-size-step: 0.0715rem;
+$text-2xs: $font-size-base - $text-size-step * 3; // ~11px
+$text-xs: $font-size-base - $text-size-step * 2; // ~12px
+$text-sm: $font-size-base - $text-size-step; // ~13px
+$text-md: $font-size-base; // ~14px
+$text-lg: $font-size-base + $text-size-step * 2; // ~16px
+$text-xl: $font-size-base + $text-size-step * 4;  // ~18px
+$text-2xl: $font-size-base + $text-size-step * 8;  // ~22px
+
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";

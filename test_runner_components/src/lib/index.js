@@ -4,11 +4,13 @@ import {ExampleFuncComponentWithHook} from './components/ExampleFuncComponentWit
 import {ExampleArrowFuncComponentWithHook} from './components/ExampleArrowFuncComponentWithHook'
 import {FlexTabBar} from "./components/FlexTabBar";
 import TooltipsTheme1 from "./components/samples/Tooltip/TooltipsTheme1";
+import MainDash from './components/containers/App/MainDash'
 
 export {
     ExampleComponent,
     ExampleFuncComponentWithHook,
     ExampleArrowFuncComponentWithHook,
     FlexTabBar,
-    TooltipsTheme1
+    TooltipsTheme1,
+    MainDash
 };

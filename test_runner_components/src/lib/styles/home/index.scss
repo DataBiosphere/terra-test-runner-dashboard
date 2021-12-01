@@ -1,0 +1,56 @@
+.home {
+
+    $sidebar-width: 375px;
+    $refresh-status-height: 130px;
+
+    display: flex;
+    position: relative;
+    flex-grow: 1;
+
+    &__sidebar {
+        position: relative;
+        width: $sidebar-width;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    &__content {
+        position: relative;
+        flex-grow: 1;
+
+        display: flex;
+        flex-flow: column;
+
+    }
+
+    &__content-body {
+        flex-grow: 1
+    }
+
+    &__content-footer {
+        flex-shrink: 1
+    }
+
+    &__git {
+        margin: 10px;
+        font-size: .85rem;
+    }
+
+    &__load-status {
+        margin: 10px;
+    }
+
+    &__issues-list {
+        position: absolute;
+        top: 10px + $refresh-status-height;
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+    }
+
+}
+
+@import 'env-list';
+@import 'info-panel';
+@import 'load-status';
+@import 'issues-list';

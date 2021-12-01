@@ -1,0 +1,31 @@
+.load-status {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    font-size: 13px;
+    color: #4A4A4A;
+
+    &__row {
+        display: table-row;
+    }
+
+    &__cell {
+        display: table-cell;
+        height: 16px;
+        line-height: 16px;
+        padding: 4px 0;
+    }
+
+    &__cell--label {
+        width: 120px;
+        font-weight: bold;
+        text-align: right;
+        text-transform: uppercase;
+    }
+
+    &__cell--data {
+        color: #222;
+        padding-left: 16px;
+        white-space: pre-line;
+    }
+}
