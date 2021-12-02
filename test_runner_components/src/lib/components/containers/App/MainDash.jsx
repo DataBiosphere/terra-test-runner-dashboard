@@ -15,7 +15,7 @@ class MainDash extends Component {
                         <h1 className="app__title">
                             <Link to="/" arial-label="Go to home page." tabIndex="-1">
                                 Test Runner
-                                Dashboard {React.Children.count(children) === 0 ? "No child" : React.Children.count(children)}
+                                Dashboard
                             </Link>
                         </h1>
                     </header>

@@ -6,7 +6,7 @@
     $card-background-color--hover: mix($card-background-color, #B2CAE4, 35%);
     $card-name-text-color: #182F40;
     $card-root-text-color: #7D8FA0;
-    $card-root-completed-color: #00FF00;
+    $card-root-completed-color: #456130;
     $card-root-exceptions-thrown-color: #FF0000;
 
     list-style: none;
@@ -88,6 +88,7 @@
     &__completed {
         flex-shrink: 0;
         font-size: 12px;
+        font-weight: 700;
         color: $card-root-completed-color;
         text-align: right;
     }
@@ -95,6 +96,7 @@
     &__exceptions-thrown {
         flex-shrink: 0;
         font-size: 12px;
+        font-weight: 700;
         color: $card-root-exceptions-thrown-color;
         text-align: right;
     }

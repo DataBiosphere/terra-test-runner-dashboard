@@ -8,7 +8,7 @@ class EnvList extends Component {
         return (
             <section className="env-list" role="region">
                 <div className="env-list__header">
-                    <h2 className="env-list__heading">Environment List</h2>
+                    <h2 className="env-list__heading">Environment Summaries</h2>
                 </div>
                 <div className="env-list__listing">
                     <Main children={children}/>
