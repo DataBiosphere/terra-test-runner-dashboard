@@ -7,19 +7,20 @@ import Main from "../Home/Main";
 
 class MainDash extends Component {
     render() {
-        const {id, isPrintModal} = this.props;
+        const {id, children, isPrintModal} = this.props;
         return (
             <BrowserRouter>
                 <div id={id} className={classNames('app', {'app--modal-print': isPrintModal})}>
                     <header className="app__header" role="banner">
                         <h1 className="app__title">
                             <Link to="/" arial-label="Go to home page." tabIndex="-1">
-                                Test Runner Dashboard
+                                Test Runner
+                                Dashboard {React.Children.count(children) === 0 ? "No child" : React.Children.count(children)}
                             </Link>
                         </h1>
                     </header>
                     <main className="app__content" role="main">
-                        <Main/>
+                        <Main children={children}/>
                     </main>
                 </div>
             </BrowserRouter>
@@ -35,6 +36,10 @@ MainDash.propTypes = {
      */
     id: PropTypes.string,
 
+    /**
+     * A list of dash components.
+     */
+    children: PropTypes.element,
     /**
      * Values for class name app--modal-print
      */

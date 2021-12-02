@@ -5,6 +5,7 @@ import {ExampleArrowFuncComponentWithHook} from './components/ExampleArrowFuncCo
 import {FlexTabBar} from "./components/FlexTabBar";
 import TooltipsTheme1 from "./components/samples/Tooltip/TooltipsTheme1";
 import MainDash from './components/containers/App/MainDash'
+import SummaryCard from "./components/RootList/SummaryCard";
 
 export {
     ExampleComponent,
@@ -12,5 +13,6 @@ export {
     ExampleArrowFuncComponentWithHook,
     FlexTabBar,
     TooltipsTheme1,
-    MainDash
+    MainDash,
+    SummaryCard
 };

@@ -4,13 +4,14 @@ import Main from "../../RootList/Main";
 
 class EnvList extends Component {
     render() {
+        const {children} = this.props;
         return (
             <section className="env-list" role="region">
                 <div className="env-list__header">
                     <h2 className="env-list__heading">Environment List</h2>
                 </div>
                 <div className="env-list__listing">
-                    <Main/>
+                    <Main children={children}/>
                 </div>
             </section>
         );
@@ -24,6 +25,10 @@ EnvList.propTypes = {
      * The ID used to identify this component in Dash callbacks.
      */
     id: PropTypes.string,
+    /**
+     * A list of dash components.
+     */
+    children: PropTypes.element,
 }
 
 export default EnvList;
