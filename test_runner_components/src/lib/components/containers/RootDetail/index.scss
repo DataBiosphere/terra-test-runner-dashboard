@@ -1,0 +1,126 @@
+@import '../../../styles/bootstrap-core';
+
+.root-detail {
+    $c: &;
+
+    $sidebar-width: 565px;
+    $header-text-color: #1B1B1B;
+    $title-bar-height: 46px;
+    $minimize-time: 0.125s;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    flex-flow: column;
+    background-color: #FFF;
+
+    &__header {
+        display: flex;
+        flex-shrink: 0;
+        min-height: $title-bar-height;
+        background-color: #F9F9F9;
+        align-items: flex-end;
+        border-bottom: 1px solid #999;
+    }
+
+    &__body {
+        position: relative;
+        display: flex;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    &__header-title {
+        text-align: right;
+        font-weight: 600;
+        font-size: 18px;
+        color: $header-text-color;
+        margin: 0 16px 0 0;
+        flex-shrink: 0;
+        flex-grow: 1;
+        align-self: center;
+
+        @include media-breakpoint-up(lg) {
+            flex-grow: 0;
+            flex-basis: $sidebar-width;
+        }
+    }
+
+    &__header-nav {
+        flex-grow: 1;
+        justify-self: stretch;
+        align-self: stretch;
+        margin-left: 8px;
+
+        display: flex;
+    }
+
+    &__header-pilist {
+        align-self: center;
+        margin-right: 16px;
+    }
+
+    &__pi-menu {
+        position: relative;
+    }
+
+    &__pi-select {
+        position: absolute !important;
+        z-index: 10000;
+        width: 350px;
+        top: 4px;
+        right: 0;
+
+        .react-select__menu {
+            margin-top: 6px;
+        }
+    }
+
+    &__sidebar {
+        position: relative;
+        width: $sidebar-width;
+        flex-shrink: 0;
+        margin-left: 0;
+        transition: margin-left $minimize-time ease-in-out;
+
+        &--minimized {
+            margin-left: -$sidebar-width;
+        }
+    }
+
+    &__content {
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        overflow: hidden;
+    }
+
+    &__sidebar-toggle {
+        position: absolute;
+        bottom: 30px;
+        right: -10px;
+        width: 18px;
+        height: 24px;
+        font-size: 20px;
+        line-height: 24px;
+        color: #FFF;
+        text-align: center;
+        background: #555;
+        cursor: pointer;
+        overflow: hidden;
+        z-index: 3000;
+        transition: right linear $minimize-time;
+
+        #{$c}__sidebar--minimized & {
+            right: -17px;
+            transform: rotate(180deg);
+        }
+    }
+}
+
+@import 'root-account-list';
+

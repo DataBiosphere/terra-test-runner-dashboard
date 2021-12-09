@@ -43,7 +43,7 @@ MainDash.propTypes = {
     /**
      * Values for class name app--modal-print
      */
-    isPrintModal: PropTypes.bool.isRequired
+    isPrintModal: PropTypes.bool.isRequired,
 }
 
 export default MainDash;

@@ -1,0 +1,166 @@
+@import '../../../styles/bootstrap-core';
+
+.root-display-message {
+    font-size: 13px;
+    line-height: 1.25;
+    margin-bottom: 30px;
+}
+
+.account-detail {
+
+    $header-height: 36px;
+    $navigation-height: 72px;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__render-error {
+        padding: 12px;
+
+        display: flex;
+
+        > span {
+            flex-grow: 1;
+        }
+
+        > span:first-child {
+            flex-shrink: 0;
+            flex-grow: 0;
+            padding-right: 8px;
+            color: #C50000;
+        }
+
+        .fa {
+            padding-top: .2em;
+            float: left;
+            font-size: 22px;
+        }
+    }
+
+    &__header {
+        background: #193345;
+        padding: 5px 10px;
+        display: flex;
+        flex-direction: row;
+        flex-shrink: 0;
+    }
+
+    &__heading {
+        float: left;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: $header-height;
+        color: #EEE;
+        margin: 0;
+    }
+
+    &__back-button {
+        font-size: 14px;
+        text-decoration: none;
+        color: #EEE;
+        padding: 5px;
+        cursor: pointer;
+        display: inherit;
+        align-items: top;
+        flex-grow: 1;
+        justify-content: flex-end;
+
+        i.fa {
+            margin: 0 3px 0 0;
+            line-height: 1.5;
+        }
+
+        &:hover {
+            font-weight: bold;
+            text-decoration: none;
+            color: #EEE;
+        }
+    }
+
+    &__navigation {
+        overflow: hidden;
+        padding-bottom: 4px;
+    }
+
+    &__content {
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+
+    &__section-heading {
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 30px;
+        color: #333;
+        margin: 0 0 10px 0;
+    }
+
+    &__section-subheading {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 30px;
+        color: #555;
+        margin: 0 0 10px 0;
+    }
+}
+
+.account-detail-general-headings {
+    font-size: 12px;
+    flex-grow: 1;
+    color: lightgrey;
+    line-height: initial;
+
+    &__title {
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    &__nick-name {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 2px;
+        max-width: 90%;
+
+        // not so sure bout thisone ...
+        overflow-x: hidden;
+
+        &--label {
+            flex-shrink: 0;
+        }
+
+        &--actual {
+            font-weight: bold;
+            font-size: 12px;
+            margin: 0 8px;
+            word-wrap: break-word;
+            display: inline;
+        }
+
+        &--edit-icon {
+            flex-shrink: 0;
+            font-size: 14px;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    &__acct-string {
+        display: flex;
+
+        &--label {
+            flex-shrink: 0;
+        }
+
+        &--actual {
+            flex-direction: row;
+            font-weight: 600;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+    }
+}
+

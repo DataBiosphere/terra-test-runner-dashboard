@@ -33,6 +33,7 @@
     "@babel/preset-react": "^7.0.0",
     "@plotly/dash-component-plugins": "^1.2.0",
     "@plotly/webpack-dash-dynamic-import": "^1.2.0",
+    "@primer/css": "^19.0.0",
     "acorn": "^8.6.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",

@@ -5,6 +5,7 @@ import Main from "../../RootList/Main";
 class EnvList extends Component {
     render() {
         const {children} = this.props;
+        const datePicker = children.pop();
         return (
             <section className="env-list" role="region">
                 <div className="env-list__header">
