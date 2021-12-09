@@ -56,6 +56,5 @@ async def all_summaries(date_val, env_type):
             if s.testSuiteName not in d:
                 d[s.testSuiteName] = []
             d[s.testSuiteName].append(s)
-        print(f"{d}")
         return d
     return d

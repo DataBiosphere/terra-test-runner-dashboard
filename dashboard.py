@@ -28,28 +28,7 @@ def get_time():
 if __name__ == '__main__':
     app = app.start("trdash")
 
-    #    with app.server.app_context():
-    #        summaries = asyncio.run(test_run_summaries_today())
-
-    #    summary_cards = [SummaryCard(id=u.id, testSuiteName=u.testSuiteName,
-    #                                 testScriptName=u.testScriptResultSummaries[0]['testScriptName'],
-    #                                 totalRun=u.testScriptResultSummaries[0]['totalRun'],
-    #                                 numCompleted=u.testScriptResultSummaries[0]['numCompleted'],
-    #                                 numExceptionsThrown=u.testScriptResultSummaries[0]['numExceptionsThrown'],
-    #                                 serverSpecificationFile=u.testConfiguration['serverSpecificationFile'])
-    #                     for u in summaries]
-
     app.layout = Div([
-        #        html.Div([html.Div("Test tooltip")],
-        #                 **{'data-for': 'element-id1', 'data-tip': 'true'}),
-        #        test_runner_components.TooltipsTheme1(
-        #            id='input',
-        #            label='my-label'
-        #        ),
-        # MainDash(summary_cards,
-        #         id='main-dash',
-        #         isPrintModal=False
-        #         ),
         Div([
             Header(
                 H1(
@@ -99,7 +78,8 @@ if __name__ == '__main__':
                                           className='navigation-tabs__tab pt-3',
                                           style={'textDecoration': 'none'}),
                                         A('Charts', href='#', id='a-charts', className='navigation-tabs__tab pt-3',
-                                          style={'textDecoration': 'none'})
+                                          style={'textDecoration': 'none', 'pointerEvents': 'none', 'cursor': 'default',
+                                                 'color': 'black'})
                                     ], className='navigation-tabs pt-1 px-4'),
                                     className='shadow-scroller__head d-flex flex-column bg-white flex-shrink-0 '
                                               'account-detail__navigation'),
@@ -119,6 +99,8 @@ if __name__ == '__main__':
 
     @app.callback(
         Output(component_id='output-detail', component_property='children'),
+        Output(component_id='a-summaries', component_property='className'),
+        Output(component_id='a-results', component_property='className'),
         Input(component_id='test-date-picker', component_property='date'),
         Input(component_id='test-env-selector', component_property='value'),
         Input(component_id='a-summaries', component_property='n_clicks'),
@@ -127,12 +109,10 @@ if __name__ == '__main__':
     def update_results(d, e, summaries, results):
         ctx = callback_context
         nav_tabs_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        print(f"{nav_tabs_id}")
         output_detail = []
         with app.server.app_context():
             # testsuite = asyncio.run(distinct_testsuite(d, e))
             all_results = asyncio.run(all_summaries(d, e))
-            # results = asyncio.run(test_run_summaries(d, e, testsuite[0]))
         if all_results:
             if nav_tabs_id == 'a-summaries':
                 for testsuite in all_results:
@@ -142,7 +122,6 @@ if __name__ == '__main__':
                     for y in [x.testScriptResultSummaries for x in all_results[testsuite]]:
                         tot_testcase += len(y)
                         for s in y:
-                            print(f"testScriptName: {s['testScriptName']}")
                             tot_testcase_pass += s['numCompleted'] == s['totalRun']
                     shortRefHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
                         'shortRefHeadCommit']
@@ -198,7 +177,8 @@ if __name__ == '__main__':
                             style={'height': '100%'})],
                         className='transactions-table__table'),
                         className='transactions-table'))
-                return output_detail
+                return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
+                        'navigation-tabs__tab pt-3']
             elif nav_tabs_id == 'a-results':
                 for testsuite in all_results:
                     tot_testcase = 0
@@ -215,7 +195,6 @@ if __name__ == '__main__':
                         for y in [x.testScriptResultSummaries for x in all_results[testsuite]]:
                             tot_testcase += len(y)
                             for s in y:
-                                print(f"testScriptName: {s['testScriptName']}")
                                 rs.append(Tr([Td(s['testScriptName'],
                                                  className='transactions-table__body-col',
                                                  style={'width': '20%', 'wordWrap': 'break-word'}),
@@ -269,6 +248,7 @@ if __name__ == '__main__':
                             className='transactions-table__table'),
                             className='transactions-table'))
                     else:
+                        tot_testcase = len(all_results[testsuite])
                         output_detail.append(Div(Div([Div(Table(Thead(
                             [Tr([Th(Div('Test case',
                                         className='transactions-table__col-label'),
@@ -317,10 +297,12 @@ if __name__ == '__main__':
                                                           'transactions-table__body-row--expandable') for u in
                                              all_results[testsuite]]),
                                       className='transactions-table__body'),
-                                className='transactions-table__body-wrapper')],
+                                className='transactions-table__body-wrapper',
+                                style={'height': '100%'} if tot_testcase <= 10 else None)],
                             className='transactions-table__table'),
                             className='transactions-table'))
-                return output_detail
+                return [output_detail, 'navigation-tabs__tab pt-3',
+                        'navigation-tabs__tab pt-3 navigation-tabs__tab--active']
         else:
             return ['No results']
 
