@@ -144,9 +144,6 @@ if __name__ == '__main__':
                         for s in y:
                             print(f"testScriptName: {s['testScriptName']}")
                             tot_testcase_pass += s['numCompleted'] == s['totalRun']
-                    tot_pass = sum(
-                        map(lambda x: x.testScriptResultSummaries[0]['numCompleted'], all_results[testsuite]))
-                    tot = sum(map(lambda x: x.testScriptResultSummaries[0]['totalRun'], all_results[testsuite]))
                     shortRefHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
                         'shortRefHeadCommit']
                     remoteOriginUrl = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
@@ -204,58 +201,125 @@ if __name__ == '__main__':
                 return output_detail
             elif nav_tabs_id == 'a-results':
                 for testsuite in all_results:
+                    tot_testcase = 0
                     output_detail.append(H5(testsuite, className='section-header'))
-                    output_detail.append(Div(Div([Div(Table(Thead(
-                        [Tr([Th(Div('Test case',
-                                    className='transactions-table__col-label'),
-                                className='transactions-table__head-col'),
-                             Th(Div('Total pass',
-                                    className='transactions-table__col-label'),
-                                className='transactions-table__head-col'),
-                             Th(Div('% pass',
-                                    className='transactions-table__col-label'),
-                                className='transactions-table__head-col'),
-                             Th(Div('Git Version',
-                                    className='transactions-table__col-label'),
-                                className='transactions-table__head-col'),
-                             Th(Div('Helm Version',
-                                    className='transactions-table__col-label'),
-                                className='transactions-table__head-col')
-                             ])]),
-                        className='transactions-table__head'),
-                        className='transactions-table__head-wrapper'),
-                        Div(className='transactions-table__head-wrapper'),
-                        Div(Table(Tbody([Tr([Td(u.testScriptResultSummaries[0]['testScriptName'],
-                                                className='transactions-table__body-col',
-                                                style={'width': '20%'}),
-                                             Td(u.testScriptResultSummaries[0]['numCompleted'],
-                                                className='transactions-table__body-col',
-                                                style={'width': '20%'}),
-                                             Td(f"{u.testScriptResultSummaries[0]['numCompleted'] / u.testScriptResultSummaries[0]['totalRun']:.0%}",
-                                                className='transactions-table__body-col',
-                                                style={'width': '20%'}),
-                                             Td(A(u.versionScriptResults[1]['gitVersions'][0]['shortRefHeadCommit'],
-                                                  href=f"{u.versionScriptResults[1]['gitVersions'][0]['remoteOriginUrl']}/commit/{u.versionScriptResults[1]['gitVersions'][0]['refHeadCommit']}",
-                                                  className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
-                                                  target='_blank')
-                                                if len(u.versionScriptResults[1]['gitVersions']) > 0
-                                                else f"{u.versionScriptResults[1]['helmVersions'][0]['helmAppVersion']}",
-                                                className='transactions-table__body-col',
-                                                style={'width': '20%'}),
-                                             Td(A(u.versionScriptResults[0]['gitVersions'][0]['shortRefHeadCommit'],
-                                                  href=f"{u.versionScriptResults[0]['gitVersions'][0]['remoteOriginUrl']}",
-                                                  className='Link--secondary text-monospace ml-2 d-none d-lg-inline')
-                                                if len(u.versionScriptResults[0]['gitVersions']) > 0
-                                                else f"{u.versionScriptResults[0]['helmVersions'][0]['helmAppVersion']}",
-                                                className='transactions-table__body-col',
-                                                style={'width': '20%'})],
-                                            className='transactions-table__body-row '
-                                                      'transactions-table__body-row--expandable') for u in
-                                         all_results[testsuite]]),
-                                  className='transactions-table__body'),
-                            className='transactions-table__body-wrapper')],
-                        className='transactions-table__table'),
-                        className='transactions-table'))
+                    shortRefHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                        'shortRefHeadCommit']
+                    remoteOriginUrl = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                        'remoteOriginUrl']
+                    refHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0]['refHeadCommit']
+                    helmVersions = all_results[testsuite][0].versionScriptResults[0]['helmVersions'][0][
+                        'helmAppVersion']
+                    if 'perf' in testsuite.lower() or 'resiliency' in testsuite.lower():
+                        rs = []
+                        for y in [x.testScriptResultSummaries for x in all_results[testsuite]]:
+                            tot_testcase += len(y)
+                            for s in y:
+                                print(f"testScriptName: {s['testScriptName']}")
+                                rs.append(Tr([Td(s['testScriptName'],
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%', 'wordWrap': 'break-word'}),
+                                              Td(s['totalRun'],
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%'}),
+                                              Td(f"{s['numCompleted'] / s['totalRun']:.0%}",
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%'}),
+                                              Td(f"{s['elapsedTimeStatistics']['percentile95']:.0f}",
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%'}),
+                                              Td(A(shortRefHeadCommit,
+                                                   href=f"{remoteOriginUrl}/commit/{refHeadCommit}",
+                                                   className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
+                                                   target='_blank'),
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%'}),
+                                              Td(helmVersions,
+                                                 className='transactions-table__body-col',
+                                                 style={'width': '20%'})],
+                                             className='transactions-table__body-row '
+                                                       'transactions-table__body-row--expandable'))
+                        output_detail.append(Div(Div([Div(Table(Thead(
+                            [Tr([Th(Div('Test case',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Concurrency',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('% pass',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('p95 (ms)',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Git Version',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Helm Version',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col')
+                                 ])]),
+                            className='transactions-table__head'),
+                            className='transactions-table__head-wrapper'),
+                            Div(className='transactions-table__head-wrapper'),
+                            Div(Table(Tbody(rs),
+                                      className='transactions-table__body'),
+                                className='transactions-table__body-wrapper',
+                                style={'height': '100%'} if tot_testcase <= 10 else None)],
+                            className='transactions-table__table'),
+                            className='transactions-table'))
+                    else:
+                        output_detail.append(Div(Div([Div(Table(Thead(
+                            [Tr([Th(Div('Test case',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Total pass',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('% pass',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Git Version',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col'),
+                                 Th(Div('Helm Version',
+                                        className='transactions-table__col-label'),
+                                    className='transactions-table__head-col')
+                                 ])]),
+                            className='transactions-table__head'),
+                            className='transactions-table__head-wrapper'),
+                            Div(className='transactions-table__head-wrapper'),
+                            Div(Table(Tbody([Tr([Td(u.testScriptResultSummaries[0]['testScriptName'],
+                                                    className='transactions-table__body-col',
+                                                    style={'width': '20%', 'wordWrap': 'break-word'}),
+                                                 Td(u.testScriptResultSummaries[0]['numCompleted'],
+                                                    className='transactions-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(f"{u.testScriptResultSummaries[0]['numCompleted'] / u.testScriptResultSummaries[0]['totalRun']:.0%}",
+                                                    className='transactions-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(A(u.versionScriptResults[1]['gitVersions'][0]['shortRefHeadCommit'],
+                                                      href=f"{u.versionScriptResults[1]['gitVersions'][0]['remoteOriginUrl']}/commit/{u.versionScriptResults[1]['gitVersions'][0]['refHeadCommit']}",
+                                                      className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
+                                                      target='_blank')
+                                                    if len(u.versionScriptResults[1]['gitVersions']) > 0
+                                                    else f"{u.versionScriptResults[1]['helmVersions'][0]['helmAppVersion']}",
+                                                    className='transactions-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(A(u.versionScriptResults[0]['gitVersions'][0]['shortRefHeadCommit'],
+                                                      href=f"{u.versionScriptResults[0]['gitVersions'][0]['remoteOriginUrl']}",
+                                                      className='Link--secondary text-monospace ml-2 d-none d-lg-inline')
+                                                    if len(u.versionScriptResults[0]['gitVersions']) > 0
+                                                    else f"{u.versionScriptResults[0]['helmVersions'][0]['helmAppVersion']}",
+                                                    className='transactions-table__body-col',
+                                                    style={'width': '20%'})],
+                                                className='transactions-table__body-row '
+                                                          'transactions-table__body-row--expandable') for u in
+                                             all_results[testsuite]]),
+                                      className='transactions-table__body'),
+                                className='transactions-table__body-wrapper')],
+                            className='transactions-table__table'),
+                            className='transactions-table'))
                 return output_detail
         else:
             return ['No results']
