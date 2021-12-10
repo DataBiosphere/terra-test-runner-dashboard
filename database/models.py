@@ -14,7 +14,10 @@ class SummaryTestRun(db.Model):
     endUserJourneyTimestamp = db.Column(TIMESTAMP, nullable=False)
     testSuiteName = db.Column(STRING, nullable=True)
     testConfiguration = db.Column(RECORD(
-        serverSpecificationFile=STRING
+        serverSpecificationFile=STRING,
+        server=RECORD(
+            workspaceManagerUri=STRING
+        )
     ), nullable=True)
     testScriptResultSummaries = db.Column(ARRAY(
         RECORD(

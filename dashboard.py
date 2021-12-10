@@ -1,12 +1,13 @@
 import asyncio
 from datetime import datetime, timedelta, date
+from os.path import splitext
 
 import pytz
 from dash import Output, Input, callback_context
 from dash.dcc import DatePickerSingle, Dropdown
 from dash.html import Div, Header, H1, A, Main, Section, Label, Nav, H5, Table, Thead, Tr, Th, Tbody, Td
 
-from api.routes.test_run_summary import all_summaries
+from api.routes.test_run_summary import all_summaries, distinct_test_config
 from api.workspacemanager.views import workspacemanager
 from app import app
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
                                                          initial_visible_month=datetime(get_time()['Y'],
                                                                                         get_time()['m'],
                                                                                         1),
-                                                         date=get_time()['d'], day_size=24),
+                                                         date=get_time()['d']),
                                         className='root-account-list__account-type-select')
                                 ], className='root-account-list__account-type-dropdown')],
                                     className='root-account-list__dropdown-bar'),
@@ -103,6 +104,7 @@ if __name__ == '__main__':
         Output(component_id='a-results', component_property='className'),
         Output(component_id='test-date-picker', component_property='date'),
         Output(component_id='test-date-picker', component_property='max_date_allowed'),
+        Output(component_id='test-env-selector', component_property='options'),
         Input(component_id='test-date-picker', component_property='date'),
         Input(component_id='test-env-selector', component_property='value'),
         Input(component_id='a-summaries', component_property='className'),
@@ -117,6 +119,8 @@ if __name__ == '__main__':
         current_date = current_datetime_dict['d']
         select_date = date.fromisoformat(d) if date.fromisoformat(d) < current_date else current_date
         output_detail = []
+        select_env_options = []
+        print(f"ctx: {ctx}")
         print(f"d: {d}")
         print(f"e: {e}")
         print(f"summaries: {summaries}")
@@ -128,11 +132,17 @@ if __name__ == '__main__':
         print(f"current_date: {current_date}")
         print(f"select_date: {select_date}")
 
+        with app.server.app_context():
+            test_config = asyncio.run(distinct_test_config(d))
+
+        for tc in test_config:
+            select_env_options.append({'label': splitext(tc[0])[0], 'value': tc[0]})
+
         if e is not None:
             with app.server.app_context():
-                # testsuite = asyncio.run(distinct_testsuite(d, e))
+                test_config = asyncio.run(distinct_test_config(d))
                 all_results = asyncio.run(all_summaries(d, e))
-            print(f"all_results: {len(all_results)}")
+
             if all_results:
                 if nav_tabs_id == 'a-summaries' or (nav_tabs_id != 'a-results' and 'active' in summaries):
                     print("In nav_tabs_id == 'a-summaries' or 'active' in summaries")
@@ -200,7 +210,7 @@ if __name__ == '__main__':
                             className='transactions-table__table'),
                             className='transactions-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
-                            'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
+                            'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
                 elif nav_tabs_id == 'a-results' or (nav_tabs_id != 'a-summaries' and 'active' in results):
                     print("nav_tabs_id == 'a-results' or 'active' in results")
                     for testsuite in all_results:
@@ -329,15 +339,15 @@ if __name__ == '__main__':
                                 className='transactions-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3',
                             'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_date,
-                            current_datetime_dict['d']]
+                            current_datetime_dict['d'], select_env_options]
             else:
                 return ['Select environment type to view test runs.',
                         'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                        'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
+                        'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
         else:
             return ['Select environment type to view test runs.',
                     'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                    'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
+                    'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
 
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')

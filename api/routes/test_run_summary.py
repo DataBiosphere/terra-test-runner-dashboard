@@ -1,6 +1,6 @@
 from datetime import date
 
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, not_
 
 from database.models import SummaryTestRun
 
@@ -43,6 +43,18 @@ async def distinct_testsuite(date_val, env_type):
         ).order_by(SummaryTestRun.testSuiteName) \
             .with_entities(SummaryTestRun.testSuiteName).distinct().all()
         return [ts for ts, in testsuite]
+    return []
+
+
+async def distinct_test_config(date_val):
+    if date_val is not None:
+        test_config = SummaryTestRun.query.filter(
+            and_(func.date(SummaryTestRun.startTimestamp) == date.fromisoformat(date_val),
+                 not_(SummaryTestRun.testConfiguration['serverSpecificationFile'].contains('local')))).order_by(
+            SummaryTestRun.testConfiguration['serverSpecificationFile']).with_entities(
+            SummaryTestRun.testConfiguration['serverSpecificationFile'],
+            SummaryTestRun.testConfiguration['server']['workspaceManagerUri']).distinct().all()
+        return test_config
     return []
 
 
