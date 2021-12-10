@@ -101,6 +101,8 @@ if __name__ == '__main__':
         Output(component_id='output-detail', component_property='children'),
         Output(component_id='a-summaries', component_property='className'),
         Output(component_id='a-results', component_property='className'),
+        Output(component_id='test-date-picker', component_property='date'),
+        Output(component_id='test-date-picker', component_property='max_date_allowed'),
         Input(component_id='test-date-picker', component_property='date'),
         Input(component_id='test-env-selector', component_property='value'),
         Input(component_id='a-summaries', component_property='className'),
@@ -111,6 +113,9 @@ if __name__ == '__main__':
     def update_results(d, e, summaries, results, summaries_n_clicks, results_n_clicks):
         ctx = callback_context
         nav_tabs_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        current_datetime_dict = get_time()
+        current_date = current_datetime_dict['d']
+        select_date = date.fromisoformat(d) if date.fromisoformat(d) < current_date else current_date
         output_detail = []
         print(f"d: {d}")
         print(f"e: {e}")
@@ -119,6 +124,10 @@ if __name__ == '__main__':
         print(f"summaries_n_clicks: {summaries_n_clicks}")
         print(f"results_n_clicks: {results_n_clicks}")
         print(f"nav_tabs_id: {nav_tabs_id}")
+        print(f"current_datetime: {current_datetime_dict['US/Eastern']}")
+        print(f"current_date: {current_date}")
+        print(f"select_date: {select_date}")
+
         if e is not None:
             with app.server.app_context():
                 # testsuite = asyncio.run(distinct_testsuite(d, e))
@@ -191,7 +200,7 @@ if __name__ == '__main__':
                             className='transactions-table__table'),
                             className='transactions-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
-                            'navigation-tabs__tab pt-3']
+                            'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
                 elif nav_tabs_id == 'a-results' or (nav_tabs_id != 'a-summaries' and 'active' in results):
                     print("nav_tabs_id == 'a-results' or 'active' in results")
                     for testsuite in all_results:
@@ -319,15 +328,16 @@ if __name__ == '__main__':
                                 className='transactions-table__table'),
                                 className='transactions-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3',
-                            'navigation-tabs__tab pt-3 navigation-tabs__tab--active']
+                            'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_date,
+                            current_datetime_dict['d']]
             else:
                 return ['Select environment type to view test runs.',
                         'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                        'navigation-tabs__tab pt-3']
+                        'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
         else:
             return ['Select environment type to view test runs.',
                     'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                    'navigation-tabs__tab pt-3']
+                    'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d']]
 
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
