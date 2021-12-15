@@ -11,11 +11,7 @@ async def test_run_summary(uuid):
 
 
 async def test_run_summaries_today():
-    summaries = SummaryTestRun.query.filter(
-        and_(func.date(SummaryTestRun.startTimestamp) == date.today(),
-             SummaryTestRun.testConfiguration['serverSpecificationFile'] == 'workspace-alpha.json')
-    ).order_by(SummaryTestRun.startTimestamp.desc()).all()
-    return summaries
+    return await test_run_summaries(date.today().isoformat(), 'workspace-alpha.json')
 
 
 async def test_run_summaries(date_val, env_type, testsuite=None):
