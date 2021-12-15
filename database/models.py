@@ -14,7 +14,10 @@ class SummaryTestRun(db.Model):
     endUserJourneyTimestamp = db.Column(TIMESTAMP, nullable=False)
     testSuiteName = db.Column(STRING, nullable=True)
     testConfiguration = db.Column(RECORD(
-        serverSpecificationFile=STRING
+        serverSpecificationFile=STRING,
+        server=RECORD(
+            workspaceManagerUri=STRING
+        )
     ), nullable=True)
     testScriptResultSummaries = db.Column(ARRAY(
         RECORD(
@@ -29,6 +32,28 @@ class SummaryTestRun(db.Model):
             )
         )
     ), nullable=True)
+    versionScriptResults = db.Column(ARRAY(
+        RECORD(
+            gitVersions=ARRAY(
+                RECORD(
+                    remoteOriginUrl=STRING,
+                    branch=STRING,
+                    refHeadCommit=STRING,
+                    shortRefHeadCommit=STRING
+                )
+            )
+        ),
+        RECORD(
+            helmVersions=ARRAY(
+                RECORD(
+                    appName=STRING,
+                    helmAppVersion=STRING,
+                    helmChartVersion=STRING
+                )
+            )
+        )
+    ))
 
     def __repr__(self):
-        return '<SummaryTestRun %r>' % self.testSuiteName
+        return '<SummaryTestRun %r %r %r %r>' % (
+            self.id, self.startTimestamp, self.testSuiteName, self.testScriptResultSummaries[0]['testScriptName'])

@@ -1,258 +1,363 @@
-import dash
-import dash_bootstrap_components as dbc
-from dash import dcc
-from dash import html
-import numpy as np
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from google.cloud import bigquery
+import asyncio
+from datetime import datetime, timedelta, date
+from os.path import splitext
 
-bq = bigquery.Client(project="terra-kernel-k8s")
+import pytz
+from dash import Output, Input, callback_context
+from dash.dcc import DatePickerSingle, Dropdown
+from dash.html import Div, Header, H1, A, Main, Section, Label, Nav, H5, Table, Thead, Tr, Th, Tbody, Td
 
-SELECT_workspace_wsmtest_integration_today = '''
-SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
- FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
- WHERE testSuiteName = 'FullIntegration' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
- ORDER BY percentile95
-'''
-
-SELECT_workspace_wsmtest_perf_today = '''
-SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
- FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
- WHERE testSuiteName = 'BasicPerf' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
- ORDER BY percentile95
-'''
-
-SELECT_workspace_wsmtest_resiliency_today = '''
-SELECT startTimestamp, summary.testScriptName, summary.elapsedTimeStatistics.percentile95
- FROM `terra-kernel-k8s.simple_stream_dataset.SUMMARY_testRun`, UNNEST(testScriptResultSummaries) as summary
- WHERE testSuiteName = 'BasicResiliency' AND EXTRACT(DATE FROM CURRENT_TIMESTAMP()) = EXTRACT(DATE FROM startTimeStamp)
- ORDER BY percentile95
-'''
-
-workspace_wsmtest_integration_today_df = bq.query(SELECT_workspace_wsmtest_integration_today).to_dataframe()
-workspace_wsmtest_perf_today_df = bq.query(SELECT_workspace_wsmtest_perf_today).to_dataframe()
-workspace_wsmtest_resiliency_today_df = bq.query(SELECT_workspace_wsmtest_resiliency_today).to_dataframe()
-
-y_perf = workspace_wsmtest_perf_today_df['percentile95'].values
-y_int = workspace_wsmtest_integration_today_df['percentile95'].values
-y_resiliy = workspace_wsmtest_resiliency_today_df['percentile95'].values
-
-x_perf = workspace_wsmtest_perf_today_df['testScriptName'].values
-x_int = workspace_wsmtest_integration_today_df['testScriptName'].values
-x_resiliy = workspace_wsmtest_resiliency_today_df['testScriptName'].values
-
-# Creating two subplots
-fig = make_subplots(rows=1, cols=3, specs=[[{}, {}, {}]], shared_xaxes=True,
-                    shared_yaxes=False, vertical_spacing=0.001)
-
-fig.append_trace(go.Bar(
-    x=y_perf,
-    y=x_perf,
-    hoverlabel={"bgcolor": "rgb(0, 0, 0)", "font": {"color": "rgb(255, 255, 255)"}},
-    hovertemplate="%{y}<br>%{x} ms",
-    marker=dict(
-        color='rgba(130,191,119,153)',  # rgba(50, 171, 96, 0.6)',
-        line=dict(
-            color='rgba(130,191,119,255)',  # rgba(50, 171, 96, 1.0)',
-            width=1),
-    ),
-    name='Workspace Manager: Performance Tests',
-    textfont=dict(color='rgba(102,117,255,255)'),
-    orientation='h',
-), 1, 1)
-
-fig.append_trace(go.Bar(
-    x=y_int,
-    y=x_int,
-    marker=dict(
-        color='rgba(255,117,255,153)',
-        line=dict(
-            color='rgba(255,117,255,255)',
-            width=1),
-    ),
-    name='Workspace Manager: Integration Tests',
-    textfont=dict(color='rgba(102,117,255,255)'),
-    orientation='h',
-), 1, 2)
-
-fig.append_trace(go.Bar(
-    x=y_resiliy,
-    y=x_resiliy,
-    marker=dict(
-        color='rgba(106,255,255,153)',
-        line=dict(
-            color='rgba(106,255,255,255)',
-            width=1),
-    ),
-    name='Workspace Manager: Resiliency Tests',
-    textfont=dict(color='rgba(102,117,255,255)'),
-    orientation='h',
-), 1, 3)
-
-fig.update_layout(
-    title=dict(
-        text='MC Terra Services Test Results Dashboard',
-        font=dict(color='rgba(206,206,206,255)')
-    ),
-    yaxis=dict(
-        color='rgba(206,206,206,255)',
-        showgrid=False,
-        showline=False,
-        showticklabels=True,
-        domain=[0, 0.85],
-    ),
-    yaxis2=dict(
-        color='rgba(206,206,206,255)',
-        showgrid=False,
-        showline=False,
-        showticklabels=True,
-        domain=[0, 0.85],
-    ),
-    yaxis3=dict(
-        color='rgba(206,206,206,255)',
-        showgrid=False,
-        showline=False,
-        showticklabels=True,
-        domain=[0, 0.85],
-    ),
-    xaxis=dict(
-        zeroline=False,
-        showline=False,
-        showticklabels=True,
-        showgrid=True,
-        domain=[0, 0.25],
-        tickfont=dict(color='rgb(255, 255, 255)')
-    ),
-    xaxis2=dict(
-        zeroline=False,
-        showline=False,
-        showticklabels=True,
-        showgrid=True,
-        domain=[0.37, 0.62],
-        tickfont=dict(color='rgb(255, 255, 255)')
-    ),
-    xaxis3=dict(
-        zeroline=False,
-        showline=False,
-        showticklabels=True,
-        showgrid=True,
-        domain=[0.75, 1],
-        tickfont=dict(color='rgb(255, 255, 255)')
-    ),
-    legend=dict(x=0.029, y=1.038, font=dict(color='rgb(255, 255, 255)', size=10)),
-    margin=dict(l=100, r=20, t=70, b=70),
-    paper_bgcolor='rgb(0, 0, 0)',  # 'rgb(248, 248, 255)',
-    plot_bgcolor='rgb(0, 0, 0)'  # 'rgb(248, 248, 255)',
-)
-
-annotations = []
-
-y_s = np.rint(y_perf)
-y_nw = np.rint(y_int)
-y_r = np.rint(y_resiliy)
-
-# Adding labels
-for yd, xd in zip(y_s, x_perf):
-    # labeling the perf test
-    annotations.append(dict(xref='x2', yref='y2',
-                            y=xd, x=yd + 10,
-                            text='{:,}'.format(yd) + 'ms',
-                            font=dict(family='Arial', size=12,
-                                      color='rgba(206,206,206,255)'  # 'rgb(128, 0, 128)'
-                                      ),
-                            showarrow=False))
-
-for yd, xd in zip(y_nw, x_int):
-    # labeling the integration test
-    annotations.append(dict(xref='x1', yref='y1',
-                            y=xd, x=yd + 3,
-                            text=str(yd) + 'ms',
-                            font=dict(family='Arial', size=12,
-                                      color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
-                                      ),
-                            showarrow=False))
-for yd, xd in zip(y_r, x_resiliy):
-    # labeling the resiliency test
-    annotations.append(dict(xref='x3', yref='y3',
-                            y=xd, x=yd,
-                            text=str(yd) + 'ms',
-                            font=dict(family='Arial', size=12,
-                                      color='rgba(206,206,206,255)'  # 'rgb(50, 171, 96)'
-                                      ),
-                            showarrow=False))
+from api.routes.test_run_summary import all_summaries, distinct_test_config
+from api.workspacemanager.views import workspacemanager
+from app import app
 
 
-# Source
-annotations.append(dict(xref='paper', yref='paper',
-                        x=-0.2, y=-0.109,
-                        text='TestRunner "' +
-                             'Workspace Manager, ' +
-                             'Buffer Services, ' +
-                             'External Cred Services',
-                        font=dict(family='Arial', size=10, color='rgba(206,206,206,255)'  # 'rgb(150,150,150)'
-                                  ),
-                        showarrow=False))
+def get_time():
+    est = datetime.today().astimezone(pytz.timezone("US/Eastern"))
+    # minus_days  = random.randint(1, 10)
+    minus_days = 0
+    est = est - timedelta(days=minus_days)
+    y = est.year
+    m = est.month
+    d = date(est.year, est.month, est.day)
+    return {'US/Eastern': est, 'd': d, 'Y': y, 'm': m}
 
-fig.update_layout(annotations=annotations)
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Renderers
+def datepicker_renderer(component_id, classname, min_date):
+    current_datetime = get_time()
+    return DatePickerSingle(id=component_id, className=classname,
+                            min_date_allowed=min_date,
+                            max_date_allowed=current_datetime['d'],
+                            initial_visible_month=datetime(current_datetime['Y'], current_datetime['m'], 1),
+                            date=current_datetime['d'])
 
-app.layout = dbc.Container(
-    [
-        html.Div(
-            [
-                dbc.Row(
-                    dbc.Col(
-                        [
-                            dbc.Row(
-                                [
-                                    dbc.Col(
-                                        [
-                                            dbc.Button("Perf", id="env-perf-button", key="env-perf-button",
-                                                       style={"backgroundColor": "#a6a6a8", "color": "#e6e5e6",
-                                                              "height": "80px", "width": "150px",
-                                                              "marginBottom": "15px", "marginTop": "25px",
-                                                              "marginRight": "2px", "textAlign": "left",
-                                                              "paddingTop": "1px"}),
-                                            dbc.Button("Stage", id="env-stage-button", key="env-stage-button",
-                                                       style={"backgroundColor": "#60626b", "color": "#abadb3",
-                                                              "height": "80px", "width": "150px",
-                                                              "marginBottom": "15px", "marginTop": "25px",
-                                                              "marginRight": "2px", "textAlign": "left",
-                                                              "paddingTop": "1px"}),
-                                            dbc.Button("Test", id="env-test-button", key="env-test-button",
-                                                       style={"backgroundColor": "#60626b", "color": "#abadb3",
-                                                              "height": "80px", "width": "150px",
-                                                              "marginBottom": "15px", "marginTop": "25px",
-                                                              "marginRight": "2px", "textAlign": "left",
-                                                              "paddingTop": "1px"}),
-                                            dbc.Button("Dev", id="env-dev-button", key="env-dev-button",
-                                                       style={"backgroundColor": "#60626b", "color": "#abadb3",
-                                                              "height": "80px", "width": "150px",
-                                                              "marginBottom": "15px", "marginTop": "25px",
-                                                              "marginRight": "2px", "textAlign": "left",
-                                                              "paddingTop": "1px"})
-                                        ]
-                                    )
-                                ]
-                            ),
-                        ],
-                        width={"size": 6, "offset": 3}
-                    )
-                )
-            ],
-            id="testrunner-dashboard-container",
-            style={"backgroundColor": "#191b28", "textAlign": "center"}
-        ),
-        dcc.Graph(
-            id='testrunner-graph',
-            figure=fig,
-            style={"backgroundColor": "#000000"}
-        )
-    ],
-    fluid=True
-)
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=443, ssl_context='adhoc')
+    app = app.start("trdash")
+
+    app.layout = Div([
+        Div([
+            Header(
+                H1(
+                    A('Test Runner Dashboard', href='/', tabIndex=-1),
+                    **{'aria-label': 'Go to home page.'}, className='app__title'),
+                className='app__header', role='banner'),
+            Main(
+                Div(
+                    [Div(
+                        Section(
+                            Div(
+                                Div([Div([Div([
+                                    Label('Date:', className='mb-0', htmlFor='test-date-picker'),
+                                    Div(id='date-picker-container', className='root-panel-list__env-type-select')
+                                ], className='root-panel-list__env-type-dropdown')],
+                                    className='root-panel-list__dropdown-bar'),
+                                    Div(Div([Label('Env type:', className='mb-0', htmlFor='env-type'),
+                                             Div(Dropdown(id='test-env-selector', className='custom-input',
+                                                          options=[{'label': 'alpha', 'value': 'workspace-alpha.json'},
+                                                                   {'label': 'dev', 'value': 'workspace-dev.json'},
+                                                                   {'label': 'wsmtest',
+                                                                    'value': 'workspace-wsmtest.json'}],
+                                                          clearable=False, style={'width': '60px !important'},
+                                                          optionHeight=24, placeholder=None),
+                                                 className='-root-panel-list__env-type-select')],
+                                            className='root-panel-list__env-type-dropdown'),
+                                        className='root-panel-list__dropdown-bar')],
+                                    className='root-panel-list__filter-controls'),
+                                className='root-panel-list__header'),
+                            className='env-list', role='region'),
+                        className='home__sidebar'),
+                        Div(
+                            [Div(
+                                [Div(
+                                    Nav([
+                                        A('Summary', href='#', id='a-summaries',
+                                          className='navigation-tabs__tab pt-3 navigation-tabs__tab--active',
+                                          style={'textDecoration': 'none'}, **{'aria-current': 'page'}),
+                                        A('Results', href='#', id='a-results',
+                                          className='navigation-tabs__tab pt-3',
+                                          style={'textDecoration': 'none'}),
+                                        A('Charts', href='#', id='a-charts', className='navigation-tabs__tab pt-3',
+                                          style={'textDecoration': 'none', 'pointerEvents': 'none', 'cursor': 'default',
+                                                 'color': 'black'})
+                                    ], className='navigation-tabs pt-1 px-4'),
+                                    className='shadow-scroller__head d-flex flex-column bg-white flex-shrink-0 '
+                                              'trdash-output-detail__navigation'),
+                                    Div(Section(id='output-detail',
+                                                className='trdash-output-details p-4', role='region'),
+                                        className='shadow-scroller__body flex-grow-1 overflow-none '
+                                                  'trdash-output-detail__content')
+                                ],
+                                className='shadow-scroller d-flex flex-column bg-white trdash-output-detail'),
+                            ],
+                            className='root-detail__content')],
+                    className='home'),
+                className='app__content', role='main'),
+        ], id='main-dash', className='app'),
+    ], id="root")
+
+
+    @app.callback(
+        Output(component_id='date-picker-container', component_property='children'),
+        Input(component_id='date-picker-container', component_property='children')
+    )
+    def initialize_datepicker(children):
+        return datepicker_renderer('test-date-picker', 'custom-input', min_date=date(2021, 11, 29))
+
+
+    @app.callback(
+        Output(component_id='output-detail', component_property='children'),
+        Output(component_id='a-summaries', component_property='className'),
+        Output(component_id='a-results', component_property='className'),
+        #        Output(component_id='test-date-picker', component_property='date'),
+        #        Output(component_id='test-date-picker', component_property='max_date_allowed'),
+        Output(component_id='test-env-selector', component_property='options'),
+        Input(component_id='test-date-picker', component_property='date'),
+        Input(component_id='test-env-selector', component_property='value'),
+        Input(component_id='a-summaries', component_property='className'),
+        Input(component_id='a-results', component_property='className'),
+        Input(component_id='a-summaries', component_property='n_clicks'),
+        Input(component_id='a-results', component_property='n_clicks'),
+        #        Input(component_id='test-date-picker', component_property='loading_state')
+    )
+    def update_results(d, e, summaries, results, summaries_n_clicks, results_n_clicks):
+        ctx = callback_context
+        nav_tabs_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        # current_datetime_dict = get_time()
+        # current_date = current_datetime_dict['d']
+        # select_date = date.fromisoformat(d) if date.fromisoformat(d) < current_date else current_date
+        output_detail = []
+        select_env_options = []
+        print(f"ctx: {ctx}")
+        print(f"d: {d}")
+        print(f"e: {e}")
+        print(f"summaries: {summaries}")
+        print(f"results: {results}")
+        print(f"summaries_n_clicks: {summaries_n_clicks}")
+        print(f"results_n_clicks: {results_n_clicks}")
+        print(f"nav_tabs_id: {nav_tabs_id}")
+        # print(f"current_datetime: {current_datetime_dict['US/Eastern']}")
+        # print(f"current_date: {current_date}")
+        # print(f"select_date: {select_date}")
+
+        with app.server.app_context():
+            test_config = asyncio.run(distinct_test_config(d))
+
+        for tc in test_config:
+            select_env_options.append({'label': splitext(tc[0])[0], 'value': tc[0]})
+
+        if e is not None:
+            with app.server.app_context():
+                test_config = asyncio.run(distinct_test_config(d))
+                all_results = asyncio.run(all_summaries(d, e))
+
+            if all_results:
+                if nav_tabs_id == 'a-summaries' or (nav_tabs_id != 'a-results' and 'active' in summaries):
+                    print("In nav_tabs_id == 'a-summaries' or 'active' in summaries")
+                    for testsuite in all_results:
+                        tot_testcase_pass = 0
+                        tot_testcase = 0
+                        output_detail.append(H5(testsuite, className='section-header'))
+                        for y in [x.testScriptResultSummaries for x in all_results[testsuite]]:
+                            tot_testcase += len(y)
+                            for s in y:
+                                tot_testcase_pass += s['numCompleted'] == s['totalRun']
+                        shortRefHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'shortRefHeadCommit']
+                        remoteOriginUrl = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'remoteOriginUrl']
+                        refHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'refHeadCommit']
+                        helmVersions = all_results[testsuite][0].versionScriptResults[0]['helmVersions'][0][
+                            'helmAppVersion']
+                        end = all_results[testsuite][0].startTimestamp.strftime("%m/%d/%Y, %H:%M:%S")
+                        begin = all_results[testsuite][-1].startTimestamp.strftime("%m/%d/%Y, %H:%M:%S")
+                        output_detail.append(Div(Div([Div(Table(Thead(
+                            [Tr([Th(Div('Duration',
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
+                                 Th(Div('Total test case(s)',
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
+                                 Th(Div('% pass',
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
+                                 Th(Div('Git Version',
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
+                                 Th(Div('Helm Version',
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col')
+                                 ])]),
+                            className='trdash-table__head'),
+                            className='trdash-table__head-wrapper'),
+                            Div(className='trdash-table__head-wrapper'),
+                            Div(Table(Tbody([Tr([Td(f"{begin} - {end}",
+                                                    className='trdash-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(tot_testcase,
+                                                    className='trdash-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(f"{tot_testcase_pass / tot_testcase:.0%}",
+                                                    className='trdash-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(A(shortRefHeadCommit,
+                                                      href=f"{remoteOriginUrl}/commit/{refHeadCommit}",
+                                                      className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
+                                                      target='_blank'),
+                                                    className='trdash-table__body-col',
+                                                    style={'width': '20%'}),
+                                                 Td(helmVersions,
+                                                    className='trdash-table__body-col',
+                                                    style={'width': '20%'})],
+                                                className='trdash-table__body-row '
+                                                          'trdash-table__body-row--expandable')]),
+                                      className='trdash-table__body'),
+                                className='trdash-table__body-wrapper',
+                                style={'height': '100%'})],
+                            className='trdash-table__table'),
+                            className='trdash-table'))
+                    return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
+                            'navigation-tabs__tab pt-3', select_env_options]
+                elif nav_tabs_id == 'a-results' or (nav_tabs_id != 'a-summaries' and 'active' in results):
+                    print("nav_tabs_id == 'a-results' or 'active' in results")
+                    for testsuite in all_results:
+                        tot_testcase = 0
+                        output_detail.append(H5(testsuite, className='section-header'))
+                        shortRefHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'shortRefHeadCommit']
+                        remoteOriginUrl = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'remoteOriginUrl']
+                        refHeadCommit = all_results[testsuite][0].versionScriptResults[1]['gitVersions'][0][
+                            'refHeadCommit']
+                        helmVersions = all_results[testsuite][0].versionScriptResults[0]['helmVersions'][0][
+                            'helmAppVersion']
+                        if 'perf' in testsuite.lower() or 'resiliency' in testsuite.lower():
+                            rs = []
+                            for y in [x.testScriptResultSummaries for x in all_results[testsuite]]:
+                                tot_testcase += len(y)
+                                for s in y:
+                                    rs.append(Tr([Td(s['testScriptName'],
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%', 'wordWrap': 'break-word'}),
+                                                  Td(s['totalRun'],
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%'}),
+                                                  Td(f"{s['numCompleted'] / s['totalRun']:.0%}",
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%'}),
+                                                  Td(f"{s['elapsedTimeStatistics']['percentile95']:.0f}",
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%'}),
+                                                  Td(A(shortRefHeadCommit,
+                                                       href=f"{remoteOriginUrl}/commit/{refHeadCommit}",
+                                                       className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
+                                                       target='_blank'),
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%'}),
+                                                  Td(helmVersions,
+                                                     className='trdash-table__body-col',
+                                                     style={'width': '20%'})],
+                                                 className='trdash-table__body-row '
+                                                           'trdash-table__body-row--expandable'))
+                            output_detail.append(Div(Div([Div(Table(Thead(
+                                [Tr([Th(Div('Test case',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Concurrency',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('% pass',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('p95 (ms)',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Git Version',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Helm Version',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col')
+                                     ])]),
+                                className='trdash-table__head'),
+                                className='trdash-table__head-wrapper'),
+                                Div(className='trdash-table__head-wrapper'),
+                                Div(Table(Tbody(rs),
+                                          className='trdash-table__body'),
+                                    className='trdash-table__body-wrapper',
+                                    style={'height': '100%'} if tot_testcase <= 10 else None)],
+                                className='trdash-table__table'),
+                                className='trdash-table'))
+                        else:
+                            tot_testcase = len(all_results[testsuite])
+                            output_detail.append(Div(Div([Div(Table(Thead(
+                                [Tr([Th(Div('Test case',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Total pass',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('% pass',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Git Version',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
+                                     Th(Div('Helm Version',
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col')
+                                     ])]),
+                                className='trdash-table__head'),
+                                className='trdash-table__head-wrapper'),
+                                Div(className='trdash-table__head-wrapper'),
+                                Div(Table(Tbody([Tr([Td(u.testScriptResultSummaries[0]['testScriptName'],
+                                                        className='trdash-table__body-col',
+                                                        style={'width': '20%', 'wordWrap': 'break-word'}),
+                                                     Td(u.testScriptResultSummaries[0]['numCompleted'],
+                                                        className='trdash-table__body-col',
+                                                        style={'width': '20%'}),
+                                                     Td(f"{u.testScriptResultSummaries[0]['numCompleted'] / u.testScriptResultSummaries[0]['totalRun']:.0%}",
+                                                        className='trdash-table__body-col',
+                                                        style={'width': '20%'}),
+                                                     Td(A(u.versionScriptResults[1]['gitVersions'][0][
+                                                              'shortRefHeadCommit'],
+                                                          href=f"{u.versionScriptResults[1]['gitVersions'][0]['remoteOriginUrl']}/commit/{u.versionScriptResults[1]['gitVersions'][0]['refHeadCommit']}",
+                                                          className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
+                                                          target='_blank')
+                                                        if len(u.versionScriptResults[1]['gitVersions']) > 0
+                                                        else f"{u.versionScriptResults[1]['helmVersions'][0]['helmAppVersion']}",
+                                                        className='trdash-table__body-col',
+                                                        style={'width': '20%'}),
+                                                     Td(A(u.versionScriptResults[0]['gitVersions'][0][
+                                                              'shortRefHeadCommit'],
+                                                          href=f"{u.versionScriptResults[0]['gitVersions'][0]['remoteOriginUrl']}",
+                                                          className='Link--secondary text-monospace ml-2 d-none d-lg-inline')
+                                                        if len(u.versionScriptResults[0]['gitVersions']) > 0
+                                                        else f"{u.versionScriptResults[0]['helmVersions'][0]['helmAppVersion']}",
+                                                        className='trdash-table__body-col',
+                                                        style={'width': '20%'})],
+                                                    className='trdash-table__body-row '
+                                                              'trdash-table__body-row--expandable') for u in
+                                                 all_results[testsuite]]),
+                                          className='trdash-table__body'),
+                                    className='trdash-table__body-wrapper',
+                                    style={'height': '100%'} if tot_testcase <= 10 else None)],
+                                className='trdash-table__table'),
+                                className='trdash-table'))
+                    return [output_detail, 'navigation-tabs__tab pt-3',
+                            'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_env_options]
+            else:
+                return ['Select environment type to view test runs.',
+                        'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
+                        'navigation-tabs__tab pt-3', select_env_options]
+        else:
+            return ['Select environment type to view test runs.',
+                    'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
+                    'navigation-tabs__tab pt-3', select_env_options]
+
+
+    app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
+
+    app.run_server(host='0.0.0.0', port=443, debug=False, ssl_context='adhoc')

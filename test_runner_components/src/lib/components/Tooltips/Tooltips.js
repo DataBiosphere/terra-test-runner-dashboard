@@ -1,5 +1,5 @@
-import '../../../styles/font-awesome.scss';
-import '../../../styles/sample-detail/sample-tooltips.scss';
+import '../../styles/font-awesome.scss';
+import '../../styles/tooltips/tooltips.scss';
 
 import React, {Component} from 'react';
 import ReactTooltip from "react-tooltip";
@@ -14,29 +14,29 @@ const TOOLTIP_DEFINITIONS = [{
 }];
 
 /**
- * TooltipTheme1 is a React tooltip component
+ * Tooltips is a React tooltip component
  */
-class TooltipsTheme1 extends Component {
+class Tooltips extends Component {
 
     render() {
         const tooltips = [];
         for (const definition of TOOLTIP_DEFINITIONS) {
-            tooltips.push(<ReactTooltip key={definition.id} id={definition.id} className="sample-tooltips__tooltip"
+            tooltips.push(<ReactTooltip key={definition.id} id={definition.id} className="summary-tooltips__tooltip"
                                         place="right" type="dark" effect="solid" delayShow={300}><i
-                className="sample-tooltips__tooltip-icon fa fa-info-circle"/>{definition.content}</ReactTooltip>);
+                className="summary-tooltips__tooltip-icon fa fa-info-circle"/>{definition.content}</ReactTooltip>);
         }
 
         return (
-            <div className="sample-tooltips">
+            <div className="summary-tooltips">
                 {tooltips}
             </div>
         );
     }
 }
 
-TooltipsTheme1.dafaultProps = {};
+Tooltips.dafaultProps = {};
 
-TooltipsTheme1.propTypes = {
+Tooltips.propTypes = {
     /**
      * The ID used to identify this component in Dash callbacks.
      */
@@ -48,4 +48,4 @@ TooltipsTheme1.propTypes = {
     label: PropTypes.string.isRequired,
 }
 
-export default TooltipsTheme1;
+export default Tooltips;

@@ -1,8 +1,9 @@
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
-const WebpackDashDynamicImport = require('@plotly/webpack-dash-dynamic-import');
+// const WebpackDashDynamicImport = require('@plotly/webpack-dash-dynamic-import');
 const packagejson = require('./package.json');
 
 const dashLibraryName = packagejson.name.replace(/-/g, '_');
@@ -46,17 +47,17 @@ module.exports = (env, argv) => {
     });
 
     return {
-        mode,
+        mode: mode,
         entry,
         output: {
             path: path.resolve(__dirname, dashLibraryName),
-            chunkFilename: '[name].js',
+            chunkFilename: '[name].chunk.js',
             filename,
             library: dashLibraryName,
             libraryTarget: 'window',
         },
         devtool,
-        externals,
+        externals: externals,
         module: {
             rules: [
                 {
@@ -70,7 +71,7 @@ module.exports = (env, argv) => {
                     test: /\.s[ac]ss$/i,
                     use: [
                         {
-                            loader: 'style-loader',
+                            loader: MiniCssExtractPlugin.loader,
                         },
                         {
                             loader: 'css-loader',
@@ -91,7 +92,7 @@ module.exports = (env, argv) => {
                     test: /\.css$/i,
                     use: [
                         {
-                            loader: 'style-loader',
+                            loader: MiniCssExtractPlugin.loader,
                         },
                         {
                             loader: 'css-loader',
@@ -106,7 +107,8 @@ module.exports = (env, argv) => {
                             options: {
                                 limit: 10000,
                                 mimetype: 'application/font-woff',
-                                outputPath: 'file'
+                                outputPath: '../../assets/fonts',
+                                publicPath: '/assets/fonts',
                             }
                         },
                     ],
@@ -117,7 +119,8 @@ module.exports = (env, argv) => {
                         {
                             loader: 'file-loader',
                             options: {
-                                outputPath: 'file'
+                                outputPath: '../../assets/fonts',
+                                publicPath: '/assets/fonts',
                             }
                         },
                     ],
@@ -156,14 +159,30 @@ module.exports = (env, argv) => {
             }
         },
         plugins: [
-            new WebpackDashDynamicImport(),
+            // new WebpackDashDynamicImport(),
             new webpack.SourceMapDevToolPlugin({
                 filename: '[file].map',
                 exclude: ['async-plotlyjs']
             }),
             new MiniCssExtractPlugin({
-                filename: 'styles.css',
-            })
-        ]
+                filename: '../../assets/style.css',
+            }),
+            //           new HtmlWebpackPlugin(Object.assign({
+            //               filename: 'index.html'
+            //           }, {
+            //               inject: true,
+            //               hash: true,
+            //               template: path.join(__dirname, '/src/lib/index.ejs'),
+            //           })),
+            // new HtmlWebpackPlugin({
+            //    inject: true,
+            //    hash: true,
+            //    template: './src/lib/index.ejs',
+            //    filename: 'index.html'
+            // }),
+        ],
+        resolve: {
+            extensions: ['.js', '.jsx']
+        }
     }
 };

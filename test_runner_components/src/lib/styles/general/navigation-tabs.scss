@@ -1,0 +1,119 @@
+.navigation-tabs {
+    $c: &;
+
+    $color: #666;
+    $color-hover: darken($color, 20%);
+    $border-color: #A6A6A4;
+    $active-border-color: #162E52;
+    $active-color: #000;
+
+    $block-color-hover: $color-hover;
+    $block-border-color: #ADADAD;
+    $block-active-bg: #7E97AD;
+    $block-active-color: #FFF;
+
+    display: flex;
+    flex-direction: row;
+    margin: 0 -12px 0;
+    align-items: flex-end;
+
+    &--block {
+        padding: 0;
+        align-items: stretch;
+        flex-grow: 1;
+        justify-content: flex-start;
+    }
+
+    &__tab {
+        vertical-align: bottom;
+        font-weight: 600;
+        font-size: 14px;
+        color: $color;
+        text-align: center;
+        padding: 5px 20px 5px 20px;
+        margin: 0 12px;
+        border: 0;
+        border-bottom: 1px solid $border-color;
+        cursor: pointer;
+        background-color: transparent;
+        outline: none;
+
+        #{$c}--block & {
+            position: relative;
+            top: 1px;
+            padding: 0 20px;
+            margin-top: 6px;
+
+            font-weight: normal;
+            font-size: 18px;
+            flex-basis: 200px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-top: 1px solid $block-border-color;
+            border-left: 1px solid $block-border-color;
+            border-right: 1px solid $block-border-color;
+            border-bottom: 1px solid $block-border-color;
+        }
+
+        &:hover {
+            border-bottom-width: 4px;
+            color: $color-hover;
+            padding-bottom: 2px;
+
+            #{$c}--block & {
+                padding-bottom: 0;
+                border-bottom-width: 1px;
+                background-color: rgba($block-active-color, 0.75);
+            }
+        }
+
+        i.fa {
+            display: block;
+            font-size: 14px;
+            margin: 0 0 3px 0;
+
+            &--inline {
+                display: inline-flex;
+                margin-right: 8px;
+            }
+        }
+
+        &--semi-active {
+            border-bottom-width: 4px;
+            padding-bottom: 2px;
+
+            &:hover {
+                border-bottom-color: $active-border-color;
+            }
+        }
+
+        &--active {
+            color: $active-color;
+            border-bottom: 4px solid $active-border-color;
+            padding-bottom: 2px;
+
+            #{$c}--block & {
+                background-color: $block-active-color;
+                border-bottom: 1px solid $block-active-color;
+            }
+
+            &:hover {
+                border-bottom-color: $active-border-color;
+                padding-bottom: 2px;
+
+                #{$c}--block & {
+                    background-color: $block-active-color;
+                    border-bottom-color: $block-active-color;
+                }
+            }
+        }
+
+        &--skinny {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+}

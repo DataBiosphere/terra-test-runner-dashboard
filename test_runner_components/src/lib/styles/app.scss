@@ -1,0 +1,81 @@
+// Shared styles and fonts.
+@import './bootstrap-core';
+// Shared by a few components so putting it here for now.
+.balance-forward {
+    &__container {
+        display: flex;
+        flex-direction: row;
+        width: 650px;
+    }
+
+    &__card {
+        width: 305px;
+        padding: 8px;
+        padding-bottom: 0;
+        margin-right: 5px;
+        margin-bottom: 15px;
+        background-color: #E6E6E6;
+    }
+}
+
+.trdash {
+    //h1, h2, h3 { color: #900; }
+    h1 { font-size: 1.625rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.125rem; }
+
+    .table {
+        > thead > tr > th {
+            border-top-width: 0 !important;
+        }
+    }
+}
+
+.table-fixed {
+    table-layout: fixed
+}
+
+// To use an inline <DatePicker>, surround the component with a <span> with this class
+// Otherwise the <DatePicker> will be a block element.
+.datepicker-inline-block {
+    display: inline-block;
+
+    > div {
+        display: inline-block;
+    }
+}
+
+// Header that gives clear separation to major sections of a screen.
+.section-header {
+    margin: map-get($spacers, 3) 0 map-get($spacers, 3) 0;
+
+    @at-root h5#{&} {
+        font-weight: 600;
+        font-size: 1.429rem;
+    }
+
+    h5 {
+        font-weight: 600;
+        font-size: 1.429rem;
+        display: inline-block;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    &--with-controls {
+        display: flex;
+        align-items: center;
+    }
+
+    &__controls {
+        margin-left: map-get($spacers, 3);
+        margin-top: -(map-get($spacers, 2));
+        margin-bottom: -(map-get($spacers, 2));
+    }
+}
+
+.section-toolbar {
+    display: flex;
+    align-items: center;
+    margin: map-get($spacers, 2) 0 map-get($spacers, 2) 0;
+}

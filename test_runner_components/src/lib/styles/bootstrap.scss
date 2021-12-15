@@ -1,0 +1,452 @@
+@import "./bootstrap-core";
+
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/images";
+@import "~bootstrap/scss/code";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/transitions";
+@import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/button-group";
+@import "~bootstrap/scss/input-group";
+@import "~bootstrap/scss/custom-forms";
+//@import "~bootstrap/scss/nav";
+//@import "~bootstrap/scss/navbar";
+@import "~bootstrap/scss/card";
+//@import "~bootstrap/scss/breadcrumb";
+//@import "~bootstrap/scss/pagination";
+//@import "~bootstrap/scss/badge";
+//@import "~bootstrap/scss/jumbotron";
+@import "~bootstrap/scss/alert";
+//@import "~bootstrap/scss/progress";
+//@import "~bootstrap/scss/media";
+//@import "~bootstrap/scss/list-group";
+@import "~bootstrap/scss/close";
+@import "~bootstrap/scss/modal";
+//@import "~bootstrap/scss/tooltip"; // See <Tooltip/> component
+@import "~bootstrap/scss/popover";
+//@import "~bootstrap/scss/carousel";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/print";
+
+.alert-warning {
+    color: theme-color-level('warning', $alert-color-level + 1.5);
+}
+
+.text-black {
+    color: $black;
+}
+
+.text-xs { font-size: $text-xs !important; }
+.text-sm { font-size: $text-sm !important; }
+.text-md { font-size: $text-md !important; }
+.text-lg { font-size: $text-lg !important; }
+.text-xl { font-size: $text-xl !important; }
+.text-2xl { font-size: $text-2xl !important; }
+
+// Width and max-width/height classes from 100px to 975px in 25px increments.
+@for $hundred from 1 through 9 {
+    @for $quarter from 0 through 3 {
+        .w-#{$hundred * 100 + $quarter * 25}px { width: #{$hundred * 100 + $quarter * 25}px !important; }
+        .mw-#{$hundred * 100 + $quarter * 25}px { max-width: #{$hundred * 100 + $quarter * 25}px !important; }
+        .mh-#{$hundred * 100 + $quarter * 25}px { max-height: #{$hundred * 100 + $quarter * 25}px !important; }
+    }
+}
+
+// Width classes from 1000px to 1250px in 50px increments.
+@for $hundred from 10 through 12 {
+    @for $quarter from 0 through 2 {
+        .w-#{$hundred * 100 + $quarter * 50}px { width: #{$hundred * 100 + $quarter * 50}px !important; }
+        .mw-#{$hundred * 100 + $quarter * 50}px { max-width: #{$hundred * 100 + $quarter * 50}px !important; }
+        .mh-#{$hundred * 100 + $quarter * 50}px { max-height: #{$hundred * 100 + $quarter * 50}px !important; }
+    }
+}
+
+@for $num from 1 through 10 {
+    .p-#{$num}px { padding: #{$num}px !important; }
+    .pt-#{$num}px,
+    .py-#{$num}px {
+        padding-top: #{$num}px !important;
+    }
+    .pr-#{$num}px,
+    .px-#{$num}px {
+        padding-right: #{$num}px !important;
+    }
+    .pb-#{$num}px,
+    .py-#{$num}px {
+        padding-bottom: #{$num}px !important;
+    }
+    .pl-#{$num}px,
+    .px-#{$num}px {
+        padding-left: #{$num}px !important;
+    }
+}
+
+.line-height-1 {
+    line-height: 1 !important;
+}
+
+// Make text look and behave like a link.
+// Make sure to use tabIndex="0".
+.text-link {
+    font-weight: normal;
+    color: $link-color;
+    text-decoration: $link-decoration;
+    cursor: pointer;
+
+    &:hover {
+        color: $link-hover-color;
+        text-decoration: $link-hover-decoration;
+    }
+
+    &:focus,
+    &.focus {
+        text-decoration: $link-hover-decoration;
+    }
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+@mixin button-disabled-grey-variant($background, $disabled-bg-color) {
+  // Disabled buttons are always grey ($gray-600, same as $secondary)
+  &.disabled,
+  &:disabled {
+    color: color-yiq($background);
+    background-color: $disabled-bg-color;
+    border-color: $disabled-bg-color;
+    &:focus, &.focus {
+        box-shadow: $btn-box-shadow, 0 0 0 $btn-focus-width rgba(mix(color-yiq($disabled-bg-color), $disabled-bg-color, 15%), .5);
+    }
+  }
+}
+
+@mixin button-clear-variant(
+    $color,
+    $hover-color: darken($color, 7.5%)
+) {
+    color: $color;
+    font-weight: normal;
+    background-color: transparent;
+
+    @include hover {
+        color: $hover-color;
+        text-decoration: $link-hover-decoration;
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    &:focus,
+    &.focus {
+        text-decoration: $link-hover-decoration;
+    }
+
+    &:disabled,
+    &.disabled {
+        color: $btn-link-disabled-color;
+        pointer-events: none;
+    }
+}
+
+a.btn {
+    text-decoration: none;
+}
+
+.btn-primary {
+    @include button-disabled-grey-variant(
+        $primary,
+        $gray-600
+    );
+}
+
+.btn-clear {
+    @include button-clear-variant(
+        inherit,
+        $link-hover-color
+    );
+}
+
+.btn-xs {
+    @include button-size(.15rem, .4rem, $font-size-base * .8, $btn-line-height-sm, $btn-border-radius-sm);
+}
+
+// Used for buttons used as toggles that display an inner white box to show the "active" toggle.
+// Best used with "btn-outline-* active" as the base CSS and then add this class when the button is actually active.
+.btn-inner-active {
+    span {
+        display: inline-block;
+        background-color: #FFF;
+        border-radius: #{$btn-border-radius * 3.5};
+        padding: ($btn-padding-y * 0.4) ($btn-padding-x * 0.65);
+        margin: -#{$btn-padding-y * 0.4} -#{$btn-padding-x * 0.65};
+    }
+
+    @each $color, $value in $theme-colors {
+        &.btn-#{$color}, &.btn-outline-#{$color} {
+            span {
+                color: $value;
+            }
+        }
+    }
+}
+
+.btn-pill-toggle {
+    > .btn:first-child {
+        @include border-left-radius($btn-border-radius * 4.5);
+    }
+
+    > .btn:last-child {
+        @include border-right-radius($btn-border-radius * 4.5);
+    }
+}
+
+// Used to fill in the background of btn-outline-* buttons.
+.btn-outline-whitebg {
+    background-color: #FFF;
+}
+
+.btn-outline-dark-no-hover {
+    @extend .btn-outline-dark;
+
+    &:hover {
+        background-color: $gray-200;
+        color: $gray-800;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-clear-#{$color} {
+        @include button-clear-variant($value);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .custom-file-label-#{$color} {
+        &:after {
+            top: -1px;
+            bottom: -1px;
+            right: -1px;
+            height: auto;
+            color: color-yiq($value);
+            @include gradient-bg($value);
+            border-color: darken($value, 12.5%);
+            border-left-width: 0;
+        }
+    }
+
+    .custom-file-input:disabled ~ .custom-file-label-#{$color} {
+        &:after {
+            opacity: $btn-disabled-opacity;
+        }
+    }
+
+    .custom-file-label-outline-#{$color} {
+        &:after {
+            top: -1px;
+            bottom: -1px;
+            right: -1px;
+            height: auto;
+            color: $value;
+            background-color: transparent;
+            border: 1px solid $value;
+        }
+    }
+
+    .custom-file-input:disabled ~ .custom-file-label-outline-#{$color} {
+        &:after {
+            opacity: $btn-disabled-opacity;
+        }
+    }
+}
+
+.custom-select-noicon {
+    padding-right: $custom-select-padding-x;
+    background-image: none;
+}
+
+.pointer-events-none {
+    pointer-events: none !important;
+}
+
+.text-prewrap {
+    white-space: pre-wrap !important;
+}
+
+.position-absolute-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+a, .btn-link {
+    text-decoration-skip-ink: auto;;
+}
+
+.btn-link {
+    &:focus, &.focus {
+        box-shadow: $btn-box-shadow, 0 0 0 $btn-focus-width rgba(mix(color-yiq($primary), $primary, 15%), .5);
+    }
+}
+
+// Makes a "link" button style more like an anchor than a button
+// when used inline with text.
+.btn-link-inline {
+    line-height: 1 !important;
+    vertical-align: baseline !important;
+    border-width: 0 !important;
+}
+
+// Explicitly allow text to be selected in an element.
+// Primarily used for buttons.
+.text-selectable {
+    user-select: text;
+}
+
+.outline-none {
+    outline: none !important;
+}
+
+.box-shadow-none {
+    box-shadow: none !important;
+}
+
+.max-width-none {
+    max-width: none !important;
+}
+
+.bg-white {
+    background-color: #FFF;
+}
+
+// Used along with custom radio/checkboxes for additional content after the <label>
+// that should be indented the same amount as the label content.
+.custom-control-indent {
+    padding-left: $custom-control-gutter + $custom-control-indicator-size;
+}
+
+.popover {
+    @mixin popover-bg-color($bgcolor) {
+        background-color: $bgcolor;
+
+        &.bs-popover-top > .arrow::after {
+            border-top-color: $bgcolor;
+        }
+
+        &.bs-popover-bottom > .arrow::after {
+            border-bottom-color: $bgcolor;
+        }
+
+        &.bs-popover-left > .arrow::after {
+            border-left-color: $bgcolor;
+        }
+
+        &.bs-popover-right > .arrow::after {
+            border-right-color: $bgcolor;
+        }
+    }
+
+    // Force a box shadow for popovers.
+    box-shadow: $popover-box-shadow;
+
+    &-white {
+        @include popover-bg-color($white);
+    }
+
+    &-xs {
+        .popover-body {
+            padding: .3rem .5rem;
+            font-size: $font-size-base * 0.75;
+        }
+    }
+
+    // Classes for extending the max width of popovers, where each number is 25px.
+    // For example, popover-w2 adds 50px and popover w5 adds 125px.
+    @for $i from 1 to 20 {
+        &-w#{$i} {
+            max-width: $popover-max-width + $i * 25px;
+        }
+    }
+}
+
+.dropdown-header {
+    color: #333 !important;
+    font-size: $text-sm !important;
+    background-color: #f4f4f4 !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 0.5rem;
+    font-weight: bold !important;
+}
+
+.dropdown-item {
+    text-decoration: none;
+
+    @at-root {
+        button#{&}, a#{&} {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+.dropdown-nocaret {
+    &::after {
+        content: none !important;
+    }
+}
+
+// Used to display a simple search input box
+// that has a search icon and only has a bottom border.
+.custom-control-search {
+    position: relative;
+
+    .fa-search {
+        position: absolute;
+        bottom: 8px;
+        left: 3px;
+        pointer-events: none;
+        color: #666;
+    }
+
+    .form-control {
+        border-radius: 0;
+        border-width: 0;
+        border-bottom: 1px solid #BBB;
+        padding-left: 24px;
+
+        &:focus {
+            box-shadow: none;
+            border-bottom-color: #0051D8;
+
+            ~ .fa-search {
+                color: #333 !important;
+            }
+        }
+    }
+}
+
+legend {
+    display: block;
+    width: 100%;
+    max-width: 100%; // 1
+    padding: 0;
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit; // 2
+    white-space: normal; // 1
+}
+
+.table-xs {
+    th,
+    td {
+        padding: .15rem;
+    }
+}
