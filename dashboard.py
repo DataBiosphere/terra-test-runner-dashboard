@@ -50,9 +50,9 @@ if __name__ == '__main__':
                             Div(
                                 Div([Div([Div([
                                     Label('Date:', className='mb-0', htmlFor='test-date-picker'),
-                                    Div(id='date-picker-container', className='root-account-list__account-type-select')
-                                ], className='root-account-list__account-type-dropdown')],
-                                    className='root-account-list__dropdown-bar'),
+                                    Div(id='date-picker-container', className='root-panel-list__env-type-select')
+                                ], className='root-panel-list__env-type-dropdown')],
+                                    className='root-panel-list__dropdown-bar'),
                                     Div(Div([Label('Env type:', className='mb-0', htmlFor='env-type'),
                                              Div(Dropdown(id='test-env-selector', className='custom-input',
                                                           options=[{'label': 'alpha', 'value': 'workspace-alpha.json'},
@@ -61,11 +61,11 @@ if __name__ == '__main__':
                                                                     'value': 'workspace-wsmtest.json'}],
                                                           clearable=False, style={'width': '60px !important'},
                                                           optionHeight=24, placeholder=None),
-                                                 className='root-account-list__account-type-select')],
-                                            className='root-account-list__account-type-dropdown'),
-                                        className='root-account-list__dropdown-bar')],
-                                    className='root-account-list__filter-controls'),
-                                className='root-account-list__header'),
+                                                 className='-root-panel-list__env-type-select')],
+                                            className='root-panel-list__env-type-dropdown'),
+                                        className='root-panel-list__dropdown-bar')],
+                                    className='root-panel-list__filter-controls'),
+                                className='root-panel-list__header'),
                             className='env-list', role='region'),
                         className='home__sidebar'),
                         Div(
