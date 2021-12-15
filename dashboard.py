@@ -23,7 +23,14 @@ def get_time():
     return {'US/Eastern': est, 'd': d, 'Y': y, 'm': m}
 
 
-# TODO: The dashboard.py will eventually be replaced by this app when ready
+# Renderers
+def datepicker_renderer(component_id, classname, min_date):
+    current_datetime = get_time()
+    return DatePickerSingle(id=component_id, className=classname,
+                            min_date_allowed=min_date,
+                            max_date_allowed=current_datetime['d'],
+                            initial_visible_month=datetime(current_datetime['Y'], current_datetime['m'], 1),
+                            date=current_datetime['d'])
 
 
 if __name__ == '__main__':
@@ -43,14 +50,7 @@ if __name__ == '__main__':
                             Div(
                                 Div([Div([Div([
                                     Label('Date:', className='mb-0', htmlFor='test-date-picker'),
-                                    Div(DatePickerSingle(id='test-date-picker', className='custom-input',
-                                                         min_date_allowed=date(2021, 11, 29),
-                                                         max_date_allowed=get_time()['d'],
-                                                         initial_visible_month=datetime(get_time()['Y'],
-                                                                                        get_time()['m'],
-                                                                                        1),
-                                                         date=get_time()['d']),
-                                        className='root-account-list__account-type-select')
+                                    Div(id='date-picker-container', className='root-account-list__account-type-select')
                                 ], className='root-account-list__account-type-dropdown')],
                                     className='root-account-list__dropdown-bar'),
                                     Div(Div([Label('Env type:', className='mb-0', htmlFor='env-type'),
@@ -83,13 +83,13 @@ if __name__ == '__main__':
                                                  'color': 'black'})
                                     ], className='navigation-tabs pt-1 px-4'),
                                     className='shadow-scroller__head d-flex flex-column bg-white flex-shrink-0 '
-                                              'account-detail__navigation'),
+                                              'trdash-output-detail__navigation'),
                                     Div(Section(id='output-detail',
-                                                className='account-spending-details p-4', role='region'),
+                                                className='trdash-output-details p-4', role='region'),
                                         className='shadow-scroller__body flex-grow-1 overflow-none '
-                                                  'account-detail__content')
+                                                  'trdash-output-detail__content')
                                 ],
-                                className='shadow-scroller d-flex flex-column bg-white account-detail'),
+                                className='shadow-scroller d-flex flex-column bg-white trdash-output-detail'),
                             ],
                             className='root-detail__content')],
                     className='home'),
@@ -99,25 +99,34 @@ if __name__ == '__main__':
 
 
     @app.callback(
+        Output(component_id='date-picker-container', component_property='children'),
+        Input(component_id='date-picker-container', component_property='children')
+    )
+    def initialize_datepicker(children):
+        return datepicker_renderer('test-date-picker', 'custom-input', min_date=date(2021, 11, 29))
+
+
+    @app.callback(
         Output(component_id='output-detail', component_property='children'),
         Output(component_id='a-summaries', component_property='className'),
         Output(component_id='a-results', component_property='className'),
-        Output(component_id='test-date-picker', component_property='date'),
-        Output(component_id='test-date-picker', component_property='max_date_allowed'),
+        #        Output(component_id='test-date-picker', component_property='date'),
+        #        Output(component_id='test-date-picker', component_property='max_date_allowed'),
         Output(component_id='test-env-selector', component_property='options'),
         Input(component_id='test-date-picker', component_property='date'),
         Input(component_id='test-env-selector', component_property='value'),
         Input(component_id='a-summaries', component_property='className'),
         Input(component_id='a-results', component_property='className'),
         Input(component_id='a-summaries', component_property='n_clicks'),
-        Input(component_id='a-results', component_property='n_clicks')
+        Input(component_id='a-results', component_property='n_clicks'),
+        #        Input(component_id='test-date-picker', component_property='loading_state')
     )
     def update_results(d, e, summaries, results, summaries_n_clicks, results_n_clicks):
         ctx = callback_context
         nav_tabs_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        current_datetime_dict = get_time()
-        current_date = current_datetime_dict['d']
-        select_date = date.fromisoformat(d) if date.fromisoformat(d) < current_date else current_date
+        # current_datetime_dict = get_time()
+        # current_date = current_datetime_dict['d']
+        # select_date = date.fromisoformat(d) if date.fromisoformat(d) < current_date else current_date
         output_detail = []
         select_env_options = []
         print(f"ctx: {ctx}")
@@ -128,9 +137,9 @@ if __name__ == '__main__':
         print(f"summaries_n_clicks: {summaries_n_clicks}")
         print(f"results_n_clicks: {results_n_clicks}")
         print(f"nav_tabs_id: {nav_tabs_id}")
-        print(f"current_datetime: {current_datetime_dict['US/Eastern']}")
-        print(f"current_date: {current_date}")
-        print(f"select_date: {select_date}")
+        # print(f"current_datetime: {current_datetime_dict['US/Eastern']}")
+        # print(f"current_date: {current_date}")
+        # print(f"select_date: {select_date}")
 
         with app.server.app_context():
             test_config = asyncio.run(distinct_test_config(d))
@@ -166,51 +175,51 @@ if __name__ == '__main__':
                         begin = all_results[testsuite][-1].startTimestamp.strftime("%m/%d/%Y, %H:%M:%S")
                         output_detail.append(Div(Div([Div(Table(Thead(
                             [Tr([Th(Div('Duration',
-                                        className='transactions-table__col-label'),
-                                    className='transactions-table__head-col'),
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
                                  Th(Div('Total test case(s)',
-                                        className='transactions-table__col-label'),
-                                    className='transactions-table__head-col'),
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
                                  Th(Div('% pass',
-                                        className='transactions-table__col-label'),
-                                    className='transactions-table__head-col'),
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
                                  Th(Div('Git Version',
-                                        className='transactions-table__col-label'),
-                                    className='transactions-table__head-col'),
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col'),
                                  Th(Div('Helm Version',
-                                        className='transactions-table__col-label'),
-                                    className='transactions-table__head-col')
+                                        className='trdash-table__col-label'),
+                                    className='trdash-table__head-col')
                                  ])]),
-                            className='transactions-table__head'),
-                            className='transactions-table__head-wrapper'),
-                            Div(className='transactions-table__head-wrapper'),
+                            className='trdash-table__head'),
+                            className='trdash-table__head-wrapper'),
+                            Div(className='trdash-table__head-wrapper'),
                             Div(Table(Tbody([Tr([Td(f"{begin} - {end}",
-                                                    className='transactions-table__body-col',
+                                                    className='trdash-table__body-col',
                                                     style={'width': '20%'}),
                                                  Td(tot_testcase,
-                                                    className='transactions-table__body-col',
+                                                    className='trdash-table__body-col',
                                                     style={'width': '20%'}),
                                                  Td(f"{tot_testcase_pass / tot_testcase:.0%}",
-                                                    className='transactions-table__body-col',
+                                                    className='trdash-table__body-col',
                                                     style={'width': '20%'}),
                                                  Td(A(shortRefHeadCommit,
                                                       href=f"{remoteOriginUrl}/commit/{refHeadCommit}",
                                                       className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
                                                       target='_blank'),
-                                                    className='transactions-table__body-col',
+                                                    className='trdash-table__body-col',
                                                     style={'width': '20%'}),
                                                  Td(helmVersions,
-                                                    className='transactions-table__body-col',
+                                                    className='trdash-table__body-col',
                                                     style={'width': '20%'})],
-                                                className='transactions-table__body-row '
-                                                          'transactions-table__body-row--expandable')]),
-                                      className='transactions-table__body'),
-                                className='transactions-table__body-wrapper',
+                                                className='trdash-table__body-row '
+                                                          'trdash-table__body-row--expandable')]),
+                                      className='trdash-table__body'),
+                                className='trdash-table__body-wrapper',
                                 style={'height': '100%'})],
-                            className='transactions-table__table'),
-                            className='transactions-table'))
+                            className='trdash-table__table'),
+                            className='trdash-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
-                            'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
+                            'navigation-tabs__tab pt-3', select_env_options]
                 elif nav_tabs_id == 'a-results' or (nav_tabs_id != 'a-summaries' and 'active' in results):
                     print("nav_tabs_id == 'a-results' or 'active' in results")
                     for testsuite in all_results:
@@ -230,87 +239,87 @@ if __name__ == '__main__':
                                 tot_testcase += len(y)
                                 for s in y:
                                     rs.append(Tr([Td(s['testScriptName'],
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%', 'wordWrap': 'break-word'}),
                                                   Td(s['totalRun'],
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%'}),
                                                   Td(f"{s['numCompleted'] / s['totalRun']:.0%}",
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%'}),
                                                   Td(f"{s['elapsedTimeStatistics']['percentile95']:.0f}",
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%'}),
                                                   Td(A(shortRefHeadCommit,
                                                        href=f"{remoteOriginUrl}/commit/{refHeadCommit}",
                                                        className='Link--secondary text-monospace ml-2 d-none d-lg-inline',
                                                        target='_blank'),
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%'}),
                                                   Td(helmVersions,
-                                                     className='transactions-table__body-col',
+                                                     className='trdash-table__body-col',
                                                      style={'width': '20%'})],
-                                                 className='transactions-table__body-row '
-                                                           'transactions-table__body-row--expandable'))
+                                                 className='trdash-table__body-row '
+                                                           'trdash-table__body-row--expandable'))
                             output_detail.append(Div(Div([Div(Table(Thead(
                                 [Tr([Th(Div('Test case',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Concurrency',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('% pass',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('p95 (ms)',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Git Version',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Helm Version',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col')
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col')
                                      ])]),
-                                className='transactions-table__head'),
-                                className='transactions-table__head-wrapper'),
-                                Div(className='transactions-table__head-wrapper'),
+                                className='trdash-table__head'),
+                                className='trdash-table__head-wrapper'),
+                                Div(className='trdash-table__head-wrapper'),
                                 Div(Table(Tbody(rs),
-                                          className='transactions-table__body'),
-                                    className='transactions-table__body-wrapper',
+                                          className='trdash-table__body'),
+                                    className='trdash-table__body-wrapper',
                                     style={'height': '100%'} if tot_testcase <= 10 else None)],
-                                className='transactions-table__table'),
-                                className='transactions-table'))
+                                className='trdash-table__table'),
+                                className='trdash-table'))
                         else:
                             tot_testcase = len(all_results[testsuite])
                             output_detail.append(Div(Div([Div(Table(Thead(
                                 [Tr([Th(Div('Test case',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Total pass',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('% pass',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Git Version',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col'),
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col'),
                                      Th(Div('Helm Version',
-                                            className='transactions-table__col-label'),
-                                        className='transactions-table__head-col')
+                                            className='trdash-table__col-label'),
+                                        className='trdash-table__head-col')
                                      ])]),
-                                className='transactions-table__head'),
-                                className='transactions-table__head-wrapper'),
-                                Div(className='transactions-table__head-wrapper'),
+                                className='trdash-table__head'),
+                                className='trdash-table__head-wrapper'),
+                                Div(className='trdash-table__head-wrapper'),
                                 Div(Table(Tbody([Tr([Td(u.testScriptResultSummaries[0]['testScriptName'],
-                                                        className='transactions-table__body-col',
+                                                        className='trdash-table__body-col',
                                                         style={'width': '20%', 'wordWrap': 'break-word'}),
                                                      Td(u.testScriptResultSummaries[0]['numCompleted'],
-                                                        className='transactions-table__body-col',
+                                                        className='trdash-table__body-col',
                                                         style={'width': '20%'}),
                                                      Td(f"{u.testScriptResultSummaries[0]['numCompleted'] / u.testScriptResultSummaries[0]['totalRun']:.0%}",
-                                                        className='transactions-table__body-col',
+                                                        className='trdash-table__body-col',
                                                         style={'width': '20%'}),
                                                      Td(A(u.versionScriptResults[1]['gitVersions'][0][
                                                               'shortRefHeadCommit'],
@@ -319,7 +328,7 @@ if __name__ == '__main__':
                                                           target='_blank')
                                                         if len(u.versionScriptResults[1]['gitVersions']) > 0
                                                         else f"{u.versionScriptResults[1]['helmVersions'][0]['helmAppVersion']}",
-                                                        className='transactions-table__body-col',
+                                                        className='trdash-table__body-col',
                                                         style={'width': '20%'}),
                                                      Td(A(u.versionScriptResults[0]['gitVersions'][0][
                                                               'shortRefHeadCommit'],
@@ -327,27 +336,26 @@ if __name__ == '__main__':
                                                           className='Link--secondary text-monospace ml-2 d-none d-lg-inline')
                                                         if len(u.versionScriptResults[0]['gitVersions']) > 0
                                                         else f"{u.versionScriptResults[0]['helmVersions'][0]['helmAppVersion']}",
-                                                        className='transactions-table__body-col',
+                                                        className='trdash-table__body-col',
                                                         style={'width': '20%'})],
-                                                    className='transactions-table__body-row '
-                                                              'transactions-table__body-row--expandable') for u in
+                                                    className='trdash-table__body-row '
+                                                              'trdash-table__body-row--expandable') for u in
                                                  all_results[testsuite]]),
-                                          className='transactions-table__body'),
-                                    className='transactions-table__body-wrapper',
+                                          className='trdash-table__body'),
+                                    className='trdash-table__body-wrapper',
                                     style={'height': '100%'} if tot_testcase <= 10 else None)],
-                                className='transactions-table__table'),
-                                className='transactions-table'))
+                                className='trdash-table__table'),
+                                className='trdash-table'))
                     return [output_detail, 'navigation-tabs__tab pt-3',
-                            'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_date,
-                            current_datetime_dict['d'], select_env_options]
+                            'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_env_options]
             else:
                 return ['Select environment type to view test runs.',
                         'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                        'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
+                        'navigation-tabs__tab pt-3', select_env_options]
         else:
             return ['Select environment type to view test runs.',
                     'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                    'navigation-tabs__tab pt-3', select_date, current_datetime_dict['d'], select_env_options]
+                    'navigation-tabs__tab pt-3', select_env_options]
 
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
