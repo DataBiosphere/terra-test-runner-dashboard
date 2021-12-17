@@ -16,7 +16,7 @@ name: Bump, Tag, and Publish
 on:
   push:
     branches:
-      - main
+      - iv-trdash-new-enhancements
     paths-ignore:
       - 'README.md'
       - '**.log'
