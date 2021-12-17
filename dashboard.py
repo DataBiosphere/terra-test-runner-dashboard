@@ -360,4 +360,4 @@ if __name__ == '__main__':
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
 
-    app.run_server(host='0.0.0.0', port=443, debug=False, ssl_context='adhoc')
+    app.run_server(host='0.0.0.0', port=9443, debug=False, ssl_context='adhoc')
