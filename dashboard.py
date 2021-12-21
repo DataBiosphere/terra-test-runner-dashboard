@@ -6,6 +6,7 @@ import pytz
 from dash import Output, Input, callback_context
 from dash.dcc import DatePickerSingle, Dropdown
 from dash.html import Div, Header, H1, A, Main, Section, Label, Nav, H5, Table, Thead, Tr, Th, Tbody, Td
+from flask_caching import Cache
 
 from api.routes.test_run_summary import all_summaries, distinct_test_config
 from api.workspacemanager.views import workspacemanager
@@ -35,6 +36,7 @@ def datepicker_renderer(component_id, classname, min_date):
 
 if __name__ == '__main__':
     app = app.start("trdash")
+    cache = Cache(app.server)
 
     app.layout = Div([
         Div([
@@ -98,6 +100,16 @@ if __name__ == '__main__':
     ], id="root")
 
 
+    @cache.memoize()
+    def get_distinct_test_config(d):
+        return asyncio.run(distinct_test_config(d))
+
+
+    @cache.memoize()
+    def get_all_summaries(d, e):
+        return asyncio.run(all_summaries(d, e))
+
+
     @app.callback(
         Output(component_id='date-picker-container', component_property='children'),
         Input(component_id='date-picker-container', component_property='children')
@@ -142,15 +154,15 @@ if __name__ == '__main__':
         # print(f"select_date: {select_date}")
 
         with app.server.app_context():
-            test_config = asyncio.run(distinct_test_config(d))
+            test_config = get_distinct_test_config(d)
 
         for tc in test_config:
             select_env_options.append({'label': splitext(tc[0])[0], 'value': tc[0]})
 
         if e is not None:
             with app.server.app_context():
-                test_config = asyncio.run(distinct_test_config(d))
-                all_results = asyncio.run(all_summaries(d, e))
+                # test_config = asyncio.run(distinct_test_config(d))
+                all_results = get_all_summaries(d, e)
 
             if all_results:
                 if nav_tabs_id == 'a-summaries' or (nav_tabs_id != 'a-results' and 'active' in summaries):
