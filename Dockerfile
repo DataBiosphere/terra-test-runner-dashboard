@@ -39,4 +39,4 @@ USER root
 WORKDIR /home/pn/apps/testrunner
 RUN pip install ./test_runner_components/
 
-USER pn
+# USER pn
