@@ -10,6 +10,7 @@ LABEL maintainer="terra-test-runner-dashboard"
 USER pn
 
 RUN mkdir -p /home/pn/apps/testrunner
+RUN mkdir -p /home/pn/apps/testrunner/cache
 
 ADD --chown=pn:pn test_runner_components /home/pn/apps/testrunner/test_runner_components
 ADD --chown=pn:pn api /home/pn/apps/testrunner/api

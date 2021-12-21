@@ -6,6 +6,6 @@ class AppConfig(object):
     CACHE_TYPE = 'FileSystemCache'
     CACHE_DEFAULT_TIMEOUT = 3600
     CACHE_IGNORE_ERRORS = True
-    CACHE_DIR = '/mnt/trdash_cache'
+    CACHE_DIR = '/home/pn/apps/testrunner/cache'
     CACHE_THRESHOLD = 100
     CACHE_OPTIONS = {'mode': 777}
