@@ -13,6 +13,9 @@ class SummaryTestRun(db.Model):
     startUserJourneyTimestamp = db.Column(TIMESTAMP, nullable=False)
     endUserJourneyTimestamp = db.Column(TIMESTAMP, nullable=False)
     testSuiteName = db.Column(STRING, nullable=True)
+    githubRunId = db.Column(STRING, nullable=True)
+    githubRepository = db.Column(STRING, nullable=True)
+    githubServerUrl = db.Column(STRING, nullable=True)
     testConfiguration = db.Column(RECORD(
         serverSpecificationFile=STRING,
         server=RECORD(
