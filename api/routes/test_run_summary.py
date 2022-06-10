@@ -60,6 +60,7 @@ async def all_summaries(date_val, env_type):
         summaries = await test_run_summaries(date_val, env_type)
         summaries = sorted(summaries, key=lambda u: u.startTimestamp, reverse=True)
         summaries = sorted(summaries, key=lambda u: u.testSuiteName)
+        list(set(map(lambda x: x['githubRunId'], summaries)));
         for s in summaries:
             if s.testSuiteName not in d:
                 d[s.testSuiteName] = []
