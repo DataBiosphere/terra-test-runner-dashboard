@@ -49,7 +49,12 @@ async def distinct_test_config(date_val):
                  not_(SummaryTestRun.testConfiguration['serverSpecificationFile'].contains('local')))).order_by(
             SummaryTestRun.testConfiguration['serverSpecificationFile']).with_entities(
             SummaryTestRun.testConfiguration['serverSpecificationFile'],
-            SummaryTestRun.testConfiguration['server']['workspaceManagerUri']).distinct().all()
+            func.coalesce(
+                SummaryTestRun.testConfiguration['server']['catalogUri'],
+                SummaryTestRun.testConfiguration['server']['externalCredentialsManagerUri'],
+                SummaryTestRun.testConfiguration['server']['workspaceManagerUri']
+            )
+        ).distinct().all()
         return test_config
     return []
 

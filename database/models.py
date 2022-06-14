@@ -16,6 +16,8 @@ class SummaryTestRun(db.Model):
     testConfiguration = db.Column(RECORD(
         serverSpecificationFile=STRING,
         server=RECORD(
+            catalogUri=STRING,
+            externalCredentialsManagerUri=STRING,
             workspaceManagerUri=STRING
         )
     ), nullable=True)

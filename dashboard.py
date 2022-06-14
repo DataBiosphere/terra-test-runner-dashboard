@@ -72,9 +72,12 @@ if __name__ == '__main__':
                             [Div(
                                 [Div(
                                     Nav([
-                                        A('Summary', href='#', id='a-summaries',
+                                        A('All', href='#', id='a-mc',
                                           className='navigation-tabs__tab pt-3 navigation-tabs__tab--active',
                                           style={'textDecoration': 'none'}, **{'aria-current': 'page'}),
+                                        A('Summary', href='#', id='a-summaries',
+                                          className='navigation-tabs__tab pt-3',
+                                          style={'textDecoration': 'none'}),
                                         A('Results', href='#', id='a-results',
                                           className='navigation-tabs__tab pt-3',
                                           style={'textDecoration': 'none'}),
@@ -108,6 +111,7 @@ if __name__ == '__main__':
 
     @app.callback(
         Output(component_id='output-detail', component_property='children'),
+        Output(component_id='a-mc', component_property='className'),
         Output(component_id='a-summaries', component_property='className'),
         Output(component_id='a-results', component_property='className'),
         #        Output(component_id='test-date-picker', component_property='date'),
@@ -115,13 +119,15 @@ if __name__ == '__main__':
         Output(component_id='test-env-selector', component_property='options'),
         Input(component_id='test-date-picker', component_property='date'),
         Input(component_id='test-env-selector', component_property='value'),
+        Input(component_id='a-mc', component_property='className'),
         Input(component_id='a-summaries', component_property='className'),
         Input(component_id='a-results', component_property='className'),
+        Input(component_id='a-mc', component_property='n_clicks'),
         Input(component_id='a-summaries', component_property='n_clicks'),
         Input(component_id='a-results', component_property='n_clicks'),
         #        Input(component_id='test-date-picker', component_property='loading_state')
     )
-    def update_results(d, e, summaries, results, summaries_n_clicks, results_n_clicks):
+    def update_results(d, e, mc, summaries, results, mc_n_clicks, summaries_n_clicks, results_n_clicks):
         ctx = callback_context
         nav_tabs_id = ctx.triggered[0]['prop_id'].split('.')[0]
         # current_datetime_dict = get_time()
@@ -132,8 +138,10 @@ if __name__ == '__main__':
         print(f"ctx: {ctx}")
         print(f"d: {d}")
         print(f"e: {e}")
+        print(f"all: {mc}")
         print(f"summaries: {summaries}")
         print(f"results: {results}")
+        print(f"mc_n_clicks: {mc_n_clicks}")
         print(f"summaries_n_clicks: {summaries_n_clicks}")
         print(f"results_n_clicks: {results_n_clicks}")
         print(f"nav_tabs_id: {nav_tabs_id}")
@@ -145,6 +153,7 @@ if __name__ == '__main__':
             test_config = asyncio.run(distinct_test_config(d))
 
         for tc in test_config:
+            print(tc)
             select_env_options.append({'label': splitext(tc[0])[0], 'value': tc[0]})
 
         if e is not None:
@@ -218,7 +227,7 @@ if __name__ == '__main__':
                                 style={'height': '100%'})],
                             className='trdash-table__table'),
                             className='trdash-table'))
-                    return [output_detail, 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
+                    return [output_detail, 'navigation-tabs__tab pt-3', 'navigation-tabs__tab pt-3 navigation-tabs__tab--active',
                             'navigation-tabs__tab pt-3', select_env_options]
                 elif nav_tabs_id == 'a-results' or (nav_tabs_id != 'a-summaries' and 'active' in results):
                     print("nav_tabs_id == 'a-results' or 'active' in results")
@@ -346,16 +355,16 @@ if __name__ == '__main__':
                                     style={'height': '100%'} if tot_testcase <= 10 else None)],
                                 className='trdash-table__table'),
                                 className='trdash-table'))
-                    return [output_detail, 'navigation-tabs__tab pt-3',
+                    return [output_detail, 'navigation-tabs__tab pt-3', 'navigation-tabs__tab pt-3',
                             'navigation-tabs__tab pt-3 navigation-tabs__tab--active', select_env_options]
             else:
                 return ['Select environment type to view test runs.',
                         'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                        'navigation-tabs__tab pt-3', select_env_options]
+                        'navigation-tabs__tab pt-3', 'navigation-tabs__tab pt-3', select_env_options]
         else:
             return ['Select environment type to view test runs.',
                     'navigation-tabs__tab pt-3  navigation-tabs__tab--active',
-                    'navigation-tabs__tab pt-3', select_env_options]
+                    'navigation-tabs__tab pt-3', 'navigation-tabs__tab pt-3', select_env_options]
 
 
     app.server.register_blueprint(workspacemanager, url_prefix='/workspacemanager')
