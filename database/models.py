@@ -1,4 +1,8 @@
+from datetime import datetime
+import pytz, re
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy_bigquery import ARRAY, RECORD, STRING, TIMESTAMP, INTEGER, BOOLEAN, FLOAT
 
 db = SQLAlchemy()
@@ -7,6 +11,7 @@ db = SQLAlchemy()
 # ORM mapping for SUMMARY_testRun table.
 class SummaryTestRun(db.Model):
     __tablename__ = "SUMMARY_testRun"
+
     id = db.Column(STRING, primary_key=True, nullable=False)
     startTimestamp = db.Column(TIMESTAMP, nullable=False)
     endTimestamp = db.Column(TIMESTAMP, nullable=False)
@@ -24,12 +29,17 @@ class SummaryTestRun(db.Model):
     testScriptResultSummaries = db.Column(ARRAY(
         RECORD(
             testScriptName=STRING,
+            testScriptDescription=STRING,
             totalRun=INTEGER,
             numCompleted=INTEGER,
             numExceptionsThrown=INTEGER,
             isfailure=BOOLEAN,
-            numberOfYears=STRING,
             elapsedTimeStatistics=RECORD(
+                min=FLOAT,
+                max=FLOAT,
+                mean=FLOAT,
+                standardDeviation=FLOAT,
+                median=FLOAT,
                 percentile95=FLOAT
             )
         )
@@ -56,6 +66,52 @@ class SummaryTestRun(db.Model):
         )
     ))
 
+    @hybrid_property
+    def serverSpecificationFile(self) -> str:
+        return self.testConfiguration['serverSpecificationFile']
+
+    @hybrid_property
+    def git_version(self):
+        for version in self.versionScriptResults:
+            if 'gitVersions' in version:
+                if len(version['gitVersions']) > 0:
+                    for git in version['gitVersions']:
+                        return {
+                            'remoteOriginUrl': git['remoteOriginUrl'],
+                            'shortRefHeadCommit': git['shortRefHeadCommit']
+                        }
+        return {}
+
+    @hybrid_property
+    def helm_version(self):
+        for version in self.versionScriptResults:
+            if 'helmVersions' in version:
+                if len(version['helmVersions']) > 0:
+                    for helm in version['helmVersions']:
+                        return {
+                            'appName': helm['appName'],
+                            'helmAppVersion': helm['helmAppVersion'],
+                            'helmChartVersion': helm['helmChartVersion']
+                        }
+        return {}
+
+    @hybrid_property
+    def service_uri_dict(self):
+        return {k: v for k, v in self.testConfiguration['server'].items()
+                if re.search(".*Uri$", k) and v is not None}
+
+    @hybrid_method
+    def match_server_spec(self, spec) -> bool:
+        return self.serverSpecificationFile == spec
+
+    @hybrid_method
+    def match_date(self, date) -> bool:
+        return func.date(self.startTimestamp) == date
+
+    @hybrid_method
+    def match_today(self) -> bool:
+        return func.date(self.startTimestamp) == datetime.now(pytz.timezone('US/Eastern')).date()
+
     def __repr__(self):
-        return '<SummaryTestRun %r %r %r %r>' % (
-            self.id, self.startTimestamp, self.testSuiteName, self.testScriptResultSummaries[0]['testScriptName'])
+        return '<SummaryTestRun %r %r %r %r %r>' % (
+            self.id, self.startTimestamp, self.testSuiteName, self.testScriptResultSummaries[0]['testScriptName'], self.testScriptResultSummaries)
