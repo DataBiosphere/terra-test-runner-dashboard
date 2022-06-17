@@ -59,6 +59,17 @@ async def distinct_test_config(date_val):
     return []
 
 
+async def get_server_specs(date_val):
+    server_specs = []
+    if date_val is not None:
+        server_specs = SummaryTestRun.query \
+            .with_entities(SummaryTestRun.serverSpecificationFile) \
+            .filter(and_(func.date(SummaryTestRun.startTimestamp) == date.fromisoformat(date_val),
+                         not_(SummaryTestRun.serverSpecificationFile.contains('local')))) \
+            .order_by(SummaryTestRun.serverSpecificationFile).distinct().all()
+    return server_specs
+
+
 async def all_summaries(date_val, env_type):
     d = dict()
     if date_val is not None and env_type is not None:
@@ -71,3 +82,24 @@ async def all_summaries(date_val, env_type):
             d[s.testSuiteName].append(s)
         return d
     return d
+
+
+async def get_test_run_summaries(date_val, server_spec):
+    if date_val is None or server_spec is None:
+        raise Exception('date_val must be a date string, server_spec cannot be None')
+
+    return SummaryTestRun.query.filter(
+        and_(SummaryTestRun.match_today(),
+             SummaryTestRun.match_server_spec(server_spec)))\
+        .order_by(SummaryTestRun.startTimestamp.desc()).all()
+
+
+async def all_service_summaries(date_val):
+    results = {}
+    server_specs = await get_server_specs(date_val)
+    for spec in server_specs:
+        summaries = await get_test_run_summaries(date_val, spec.serverSpecificationFile)
+        print(spec.serverSpecificationFile)
+        print(len(summaries))
+        results[spec.serverSpecificationFile] = summaries
+    return results
