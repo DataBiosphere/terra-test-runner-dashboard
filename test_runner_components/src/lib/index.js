@@ -14,6 +14,7 @@ import {ExampleArrowFuncComponentWithHook} from './components/ExampleArrowFuncCo
 import Tooltips from "./components/Tooltips/Tooltips";
 import MainDash from './components/containers/App/MainDash'
 import SummaryCard from "./components/RootList/SummaryCard";
+import SimpleTable from "./components/Tables/SimpleTable";
 import './styles/custom.scss'
 
 export {
@@ -22,5 +23,6 @@ export {
     ExampleArrowFuncComponentWithHook,
     Tooltips,
     MainDash,
-    SummaryCard
+    SummaryCard,
+    SimpleTable
 };
