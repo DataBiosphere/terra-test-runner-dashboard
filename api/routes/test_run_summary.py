@@ -1,9 +1,10 @@
+import datetime
 from datetime import date
 
+import numpy as np
 from sqlalchemy import func, and_, not_
-
 from database.models import SummaryTestRun
-
+import pandas as pd
 
 async def test_run_summary(uuid):
     summary = SummaryTestRun.query.filter_by(id=uuid).first()
@@ -89,7 +90,7 @@ async def get_test_run_summaries(date_val, server_spec):
         raise Exception('date_val must be a date string, server_spec cannot be None')
 
     return SummaryTestRun.query.filter(
-        and_(SummaryTestRun.match_today(),
+        and_(SummaryTestRun.match_date(date_val),
              SummaryTestRun.match_server_spec(server_spec)))\
         .order_by(SummaryTestRun.startTimestamp.desc()).all()
 
@@ -99,7 +100,41 @@ async def all_service_summaries(date_val):
     server_specs = await get_server_specs(date_val)
     for spec in server_specs:
         summaries = await get_test_run_summaries(date_val, spec.serverSpecificationFile)
-        print(spec.serverSpecificationFile)
-        print(len(summaries))
         results[spec.serverSpecificationFile] = summaries
     return results
+
+
+async def get_response_time_trends(begin_date, end_date, server_spec):
+    data = []
+    trends = SummaryTestRun.query \
+        .with_entities(
+            SummaryTestRun.startUserJourneyTimestamp,
+            SummaryTestRun.testScriptResultSummaries
+        ) \
+        .filter(
+            and_(
+                SummaryTestRun.match_date_range(begin_date, end_date),
+                SummaryTestRun.match_server_spec(server_spec)
+            )
+        ).order_by(SummaryTestRun.startTimestamp.desc()).all()
+    for trend in trends:
+        timestamp = trend[0]
+        stats = trend[1]
+        for stat in stats:
+            data.append({
+                'timestamp': timestamp,
+                'testScriptName': stat['testScriptName'],
+                'totalRun': stat['totalRun'],
+                'numCompleted': stat['numCompleted'],
+                'numExceptionsThrown': stat['numExceptionsThrown'],
+                'min': round(stat['elapsedTimeStatistics']['min']),
+                'max': round(stat['elapsedTimeStatistics']['max']),
+                'mean': round(stat['elapsedTimeStatistics']['mean']),
+                'standardDeviation': round(stat['elapsedTimeStatistics']['standardDeviation']),
+                'median': round(stat['elapsedTimeStatistics']['median']),
+                'percentile95': round(stat['elapsedTimeStatistics']['percentile95']),
+            })
+    df = pd.DataFrame(data).sort_values('timestamp')
+    df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert(tz='US/Eastern')
+    df['date'] = [str(ts.month) + '/' + str(ts.day) for ts in df['timestamp']]
+    return df
