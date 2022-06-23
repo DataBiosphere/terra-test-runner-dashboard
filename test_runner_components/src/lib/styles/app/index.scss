@@ -14,6 +14,7 @@
     $header-divider-color: mix($header-text-color, $header-background-color, 60%);
     $header-divider-offset: 12px;
     $header-focus-color: saturate(mix(#FFF, $header-background-color, 20%), 10%);
+    $title-gutter: 20px;
 
     position: absolute;
     display: flex;
@@ -23,6 +24,7 @@
     bottom: 0;
     left: 0;
     background: $background-color;
+    font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
 
     &__header {
         position: relative;
@@ -30,7 +32,7 @@
         flex-shrink: 0;
         color: $header-text-color;
         background: $header-background-color;
-        padding: 0 $header-gutter;
+        padding: 0;
         z-index: 10000;
 
         @media print {
@@ -44,7 +46,7 @@
         flex-grow: 1;
         font-weight: normal;
         font-size: $title-font-size;
-        padding: 0;
+        padding: 0 $title-gutter;
         margin: 0;
         white-space: nowrap;
 
