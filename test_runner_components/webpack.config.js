@@ -63,9 +63,14 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader',
-                    },
+                    use: [
+                        {
+                            loader: 'babel-loader',
+                        },
+                        {
+                            loader: 'ify-loader',
+                        },
+                    ],
                 },
                 {
                     test: /\.s[ac]ss$/i,
