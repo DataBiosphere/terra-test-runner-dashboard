@@ -116,7 +116,6 @@ if __name__ == '__main__':
         output_detail = []
         print(f"ctx: {ctx}")
         print(f"d: {d}")
-        print(f"mc_n_clicks: {mc_n_clicks}")
         print(f"nav_tabs_id: {nav_tabs_id}")
 
         test_suite = ''
