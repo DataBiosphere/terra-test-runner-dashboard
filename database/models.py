@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytz, re
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy_bigquery import ARRAY, RECORD, STRING, TIMESTAMP, INTEGER, BOOLEAN, FLOAT
 
@@ -107,6 +107,10 @@ class SummaryTestRun(db.Model):
     @hybrid_method
     def match_date(self, date) -> bool:
         return func.date(self.startTimestamp) == date
+
+    @hybrid_method
+    def match_date_range(self, start_date, end_date) -> bool:
+        return and_(func.date(self.startTimestamp) >= start_date, func.date(self.startTimestamp) <= end_date)
 
     @hybrid_method
     def match_today(self) -> bool:
