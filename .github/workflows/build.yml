@@ -36,7 +36,7 @@ jobs:
           token: ${{ secrets.BROADBOT_TOKEN }}
 
       - name: Bump the tag to a new version
-        uses: databiosphere/github-actions/actions/bumper@bumper-0.0.3
+        uses: databiosphere/github-actions/actions/bumper
         id: tag
         env:
           DEFAULT_BUMP: patch
@@ -58,6 +58,7 @@ jobs:
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
+          echo $DOCKER_TAG
           echo ::set-output name=name::${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${REPOSITORY_NAME}/${IMAGE_NAME}:${DOCKER_TAG}
 
       - name: Build image
