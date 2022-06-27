@@ -58,7 +58,6 @@ jobs:
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
-          echo $DOCKER_TAG
           echo ::set-output name=name::${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${REPOSITORY_NAME}/${IMAGE_NAME}:${DOCKER_TAG}
 
       - name: Build image
