@@ -1,4 +1,5 @@
 import datetime
+import re
 from datetime import date
 
 import numpy as np
@@ -138,3 +139,119 @@ async def get_response_time_trends(begin_date, end_date, server_spec):
     df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert(tz='US/Eastern')
     df['date'] = [str(ts.month) + '/' + str(ts.day) for ts in df['timestamp']]
     return df
+
+
+async def get_mc_terra_test_results(begin_date, end_date):
+    results = SummaryTestRun.query.filter(SummaryTestRun.match_date_range(begin_date, end_date)) \
+        .with_entities(
+        SummaryTestRun.versionScriptResults,
+        SummaryTestRun.startUserJourneyTimestamp,
+        SummaryTestRun.endUserJourneyTimestamp,
+        SummaryTestRun.serverSpecificationFile,
+        SummaryTestRun.testConfiguration['server'],
+        SummaryTestRun.testSuiteName,
+        SummaryTestRun.testScriptResultSummaries[0]['testScriptName'],
+        SummaryTestRun.testScriptResultSummaries[0]['totalRun'],
+        SummaryTestRun.testScriptResultSummaries[0]['numCompleted'],
+        SummaryTestRun.testScriptResultSummaries[0]['numExceptionsThrown'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['min'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['max'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['mean'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['standardDeviation'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['median'],
+        SummaryTestRun.testScriptResultSummaries[0]['elapsedTimeStatistics']['percentile95']) \
+        .order_by(
+        SummaryTestRun.serverSpecificationFile.asc(),
+        SummaryTestRun.testSuiteName.asc(),
+        SummaryTestRun.startUserJourneyTimestamp.asc()) \
+        .all()
+    data = []
+    for result in results:
+        data.append({
+            'spec': result[3],
+            'suite': result[5],
+            'testScriptName': result[6],
+            'totalRun': result[7],
+            'numCompleted': result[8],
+            'numExceptionsThrown': result[9],
+            'min': round(result[10]),
+            'max': round(result[11]),
+            'mean': round(result[12]),
+            'sd': round(result[13]),
+            'p50': round(result[14]),
+            'p95': round(result[15]),
+            'git': git_version(result[0]),
+            'helm': helm_version(result[0]),
+            'server': service_uri_dict(result[4]),
+            'timestamp': result[1]
+        })
+    df = pd.DataFrame(data)
+    df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert(tz='US/Eastern')
+    df['date'] = [str(ts.month) + '/' + str(ts.day) for ts in df['timestamp']]
+    dfg = df.groupby(['spec', 'suite', 'testScriptName']) \
+        .agg(
+        {
+            'totalRun': hist,
+            'numCompleted': hist,
+            'numExceptionsThrown': hist,
+            'min': hist,
+            'max': hist,
+            'mean': hist,
+            'sd': hist,
+            'p50': hist,
+            'p95': hist,
+            'git': 'last',
+            'helm': 'last',
+            'server': 'last',
+            'timestamp': hist,
+            'date': hist
+        })
+
+    l1 = sorted(list(set([(i[0], i[1]) for i in dfg.index.values])))
+
+    # ecm_fullperf = dfg.loc[('workspace-local.json', 'FullIntegration')]
+    # print(ecm_fullperf)
+    # for script in ecm_fullperf.index.values:
+    #    print('{}, {}, {}'.format(script, ecm_fullperf.loc[script]['date'], ecm_fullperf.loc[script]['p95']))
+
+    # for ind in l1:
+    #    l2 = dfg.loc[ind].index.values
+    #    for ts in l2:
+    #        res = dfg.loc[ind].loc[ts]
+    #        print('{}, {}, {}, {}'.format(ind, res['git'], res['helm'], res['server']))
+
+    return l1, dfg
+
+
+def hist(s):
+    return tuple(s.values)
+
+
+def git_version(versions) -> dict:
+    for version in versions:
+        if 'gitVersions' in version:
+            if len(version['gitVersions']) > 0:
+                for git in version['gitVersions']:
+                    return {
+                        'remoteOriginUrl': git['remoteOriginUrl'],
+                        'shortRefHeadCommit': git['shortRefHeadCommit']
+                    }
+    return {}
+
+
+def helm_version(versions) -> dict:
+    for version in versions:
+        if 'helmVersions' in version:
+            if len(version['helmVersions']) > 0:
+                for helm in version['helmVersions']:
+                    return {
+                        'appName': helm['appName'],
+                        'helmAppVersion': helm['helmAppVersion'],
+                        'helmChartVersion': helm['helmChartVersion']
+                    }
+    return {}
+
+
+def service_uri_dict(server):
+    return {k: v for k, v in server.items()
+            if re.search(".*Uri$", k) and v is not None}

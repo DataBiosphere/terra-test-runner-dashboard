@@ -1,5 +1,6 @@
 from datetime import datetime
-import pytz, re
+import pytz
+import re
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, and_
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
@@ -71,7 +72,7 @@ class SummaryTestRun(db.Model):
         return self.testConfiguration['serverSpecificationFile']
 
     @hybrid_property
-    def git_version(self):
+    def git_version(self) -> dict:
         for version in self.versionScriptResults:
             if 'gitVersions' in version:
                 if len(version['gitVersions']) > 0:
@@ -83,7 +84,7 @@ class SummaryTestRun(db.Model):
         return {}
 
     @hybrid_property
-    def helm_version(self):
+    def helm_version(self) -> dict:
         for version in self.versionScriptResults:
             if 'helmVersions' in version:
                 if len(version['helmVersions']) > 0:

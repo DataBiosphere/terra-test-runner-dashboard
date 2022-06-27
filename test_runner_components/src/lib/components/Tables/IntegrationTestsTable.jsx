@@ -70,9 +70,21 @@ const cols = [
                 } }
             />
     },
-    {title: 'Failed', field: 'numExceptionsThrown', type: 'numeric'},
-    {title: 'Passed', field: 'numCompleted', type: 'numeric'},
-    {title: 'Skipped', field: 'numSkipped', type: 'numeric',
+    {title: 'Failed', field: 'numExceptionsThrown', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'Passed', field: 'numCompleted', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'Skipped', field: 'numSkipped', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric',
         render: (row) =>
             row.totalRun - row.numCompleted - row.numExceptionsThrown
     },
@@ -91,6 +103,8 @@ class IntegrationTestsTable extends Component {
                         cellStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
                             fontSize: "12px",
+                            textAlign: "left",
+                            verticalAlign: "top",
                         },
                         headerStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",

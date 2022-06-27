@@ -114,12 +114,36 @@ const cols = [
                 } }
             /></div>
     },
-    {title: 'Min [ms]', field: 'min', type: 'numeric'},
-    {title: 'Max [ms]', field: 'max', type: 'numeric'},
-    {title: 'Mean [ms]', field: 'mean', type: 'numeric'},
-    {title: 'Standard deviation [ms]', field: 'sd', type: 'numeric'},
-    {title: 'p50 [ms]', field: 'p50', type: 'numeric'},
-    {title: 'p95 [ms]', field: 'p95', type: 'numeric'},
+    {title: 'Min [ms]', field: 'min', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'Max [ms]', field: 'max', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'Mean [ms]', field: 'mean', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'Standard deviation [ms]', field: 'sd', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'p50 [ms]', field: 'p50', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
+    {title: 'p95 [ms]', field: 'p95', cellStyle: {
+        textAlign: 'center', verticalAlign: "top",
+        }, headerStyle: {
+        textAlign: 'center',
+        }, type: 'numeric'},
 ];
 
 class PerfTestsTable extends Component {
@@ -135,6 +159,8 @@ class PerfTestsTable extends Component {
                         cellStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
                             fontSize: "12px",
+                            textAlign: "left",
+                            verticalAlign: "top",
                         },
                         headerStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
