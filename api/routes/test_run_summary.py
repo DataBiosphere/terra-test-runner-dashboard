@@ -188,6 +188,20 @@ async def get_mc_terra_test_results(begin_date, end_date):
     df = pd.DataFrame(data)
     df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert(tz='US/Eastern')
     df['date'] = [str(ts.month) + '/' + str(ts.day) for ts in df['timestamp']]
+
+    # Group results for easy parsing using primary and secondary indices
+    # e.g.
+    # ecm_fullperf = dfg.loc[('workspace-local.json', 'FullIntegration')]
+    # print(ecm_fullperf)
+    # for script in ecm_fullperf.index.values:
+    #    print('{}, {}, {}'.format(script, ecm_fullperf.loc[script]['date'], ecm_fullperf.loc[script]['p95']))
+
+    # for ind in l1:
+    #    l2 = dfg.loc[ind].index.values
+    #    for ts in l2:
+    #        res = dfg.loc[ind].loc[ts]
+    #        print('{}, {}, {}, {}'.format(ind, res['git'], res['helm'], res['server']))
+
     dfg = df.groupby(['spec', 'suite', 'testScriptName']) \
         .agg(
         {
@@ -208,17 +222,6 @@ async def get_mc_terra_test_results(begin_date, end_date):
         })
 
     l1 = sorted(list(set([(i[0], i[1]) for i in dfg.index.values])))
-
-    # ecm_fullperf = dfg.loc[('workspace-local.json', 'FullIntegration')]
-    # print(ecm_fullperf)
-    # for script in ecm_fullperf.index.values:
-    #    print('{}, {}, {}'.format(script, ecm_fullperf.loc[script]['date'], ecm_fullperf.loc[script]['p95']))
-
-    # for ind in l1:
-    #    l2 = dfg.loc[ind].index.values
-    #    for ts in l2:
-    #        res = dfg.loc[ind].loc[ts]
-    #        print('{}, {}, {}, {}'.format(ind, res['git'], res['helm'], res['server']))
 
     return l1, dfg
 
