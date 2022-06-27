@@ -36,7 +36,7 @@ jobs:
           token: ${{ secrets.BROADBOT_TOKEN }}
 
       - name: Bump the tag to a new version
-        uses: databiosphere/github-actions/actions/bumper
+        uses: DataBiosphere/github-actions/actions/bumper
         id: tag
         env:
           DEFAULT_BUMP: patch
