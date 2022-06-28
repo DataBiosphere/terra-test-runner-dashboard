@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, date
 import numpy as np
 import pandas as pd
 import pytz
-from dash import Output, Input, callback_context
-from dash.dcc import DatePickerSingle, Loading
+from dash import Output, Input, callback_context, dcc
+from dash.dcc import Clipboard, DatePickerSingle, Loading
 from dash.html import Div, Header, H1, A, Main, Section, Label, Nav
 
 from test_runner_components import Tooltips, IntegrationTestsTable, PerfTestsTable
@@ -116,6 +116,7 @@ if __name__ == '__main__':
             config = test_config[0]
             suite = test_config[1]
             git = {}
+            remoteoriginurl = None
             helm = {}
             service_uri_dict = {}
             output = []
@@ -130,6 +131,8 @@ if __name__ == '__main__':
                         g = test_result['git']
                         if len(g) > 0:
                             git = g['shortRefHeadCommit']
+                            remoteoriginurl = g['remoteOriginUrl'] + "/commit/" + g['refHeadCommit']
+
                     if len(helm) == 0:
                         # print('helm: {}'.format(test_result['helm']))
                         h = test_result['helm']
@@ -258,6 +261,16 @@ if __name__ == '__main__':
                     [
                         Tooltips(id='git' + title, label='Git', tooltip=git, fa='fa fa-github')
                         if len(git) > 0 else '',
+                        dcc.Input(id='remotegiturl' + title, type='hidden', value=remoteoriginurl)
+                        if remoteoriginurl is not None else '',
+                        Clipboard(target_id='remotegiturl' + title,
+                                  title='Copy git url',
+                                  style={
+                                      'display': 'inline-block',
+                                      'fontSize': 20,
+                                      'verticalAlign': 'top',
+                                  })
+                        if remoteoriginurl is not None else '',
                         Tooltips(id='helm' + title, label='Helm', tooltip=helm, fa='fa fa-info-circle')
                         if len(helm) > 0 else ''
                     ] +

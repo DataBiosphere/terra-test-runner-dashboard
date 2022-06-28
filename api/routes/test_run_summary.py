@@ -237,6 +237,8 @@ def git_version(versions) -> dict:
                 for git in version['gitVersions']:
                     return {
                         'remoteOriginUrl': git['remoteOriginUrl'],
+                        'branch': git['branch'],
+                        'refHeadCommit': git['refHeadCommit'],
                         'shortRefHeadCommit': git['shortRefHeadCommit']
                     }
     return {}
