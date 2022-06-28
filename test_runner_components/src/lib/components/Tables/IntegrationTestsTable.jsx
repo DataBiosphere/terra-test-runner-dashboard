@@ -52,20 +52,24 @@ class IntegrationTestsTable extends Component {
                             ]
                         }
                         layout={{
+                            paper_bgcolor: 'rgba(0,0,0,0)',
+                            plot_bgcolor: 'rgba(0,0,0,0)',
                             width: 200,
-                            height: 120,
+                            height: 80,
                             barmode: 'relative',
                             showlegend: false,
                             margin: {
-                                l: 50,
-                                r: 50,
-                                b: 50,
-                                t: 50,
-                                pad: 4
+                                l: 20,
+                                r: 20,
+                                b: 20,
+                                t: 0,
+                                pad: 1
                             },
                             xaxis: {
-                                visible: false,
-                                showticklabels: false,
+                                tickfont: {
+                                    family: "'Lato', 'Helvetica Neue', Arial, sans-serif",
+                                    size: "8px",
+                                },
                             },
                             yaxis: {
                                 visible: false,
@@ -126,6 +130,10 @@ class IntegrationTestsTable extends Component {
                         headerStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
                         },
+                        rowStyle: (row, i) => ({
+                            backgroundColor: i % 2 === 0 ? "#ffffff" : "#eeeeee",
+                            maxHeight: "50px",
+                        }),
                     }}
                 />
             </div>

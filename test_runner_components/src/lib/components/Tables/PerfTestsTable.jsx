@@ -91,8 +91,10 @@ class PerfTestsTable extends Component {
                             ]
                         }
                         layout={{
-                            width: 320,
-                            height: 240,
+                            paper_bgcolor: 'rgba(0,0,0,0)',
+                            plot_bgcolor: 'rgba(0,0,0,0)',
+                            width: 200,
+                            height: 80,
                             legend: {
                                 font: {
                                     family: "'Lato', 'Helvetica Neue', Arial, sans-serif",
@@ -103,16 +105,23 @@ class PerfTestsTable extends Component {
                                 xanchor: 'left',
                                 x: 0.1,
                             },
+                            margin: {
+                                l: 40,
+                                r: 20,
+                                b: 20,
+                                t: 0,
+                                pad: 1
+                            },
                             xaxis: {
                                 tickfont: {
                                     family: "'Lato', 'Helvetica Neue', Arial, sans-serif",
-                                    size: "9px",
+                                    size: "8px",
                                 },
                             },
                             yaxis: {
                                 tickfont: {
                                     family: "'Lato', 'Helvetica Neue', Arial, sans-serif",
-                                    size: "9px",
+                                    size: "8px",
                                 },
                             },
                         }}
@@ -177,6 +186,10 @@ class PerfTestsTable extends Component {
                         headerStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
                         },
+                        rowStyle: (row, i) => ({
+                            backgroundColor: i % 2 === 0 ? "#ffffff" : "#eeeeee",
+                            maxHeight: "50px",
+                        }),
                     }}
                 />
             </div>
