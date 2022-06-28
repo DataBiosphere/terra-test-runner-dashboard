@@ -108,7 +108,7 @@ class IntegrationTestsTable extends Component {
                         },
                         headerStyle: {
                             fontFamily: "'Lato', 'Helvetica Neue', Arial, sans-serif",
-                        }
+                        },
                     }}
                 />
             </div>

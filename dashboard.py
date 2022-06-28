@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytz
 from dash import Output, Input, callback_context
-from dash.dcc import DatePickerSingle
+from dash.dcc import DatePickerSingle, Loading
 from dash.html import Div, Header, H1, A, Main, Section, Label, Nav
 
 from test_runner_components import Tooltips, IntegrationTestsTable, PerfTestsTable
@@ -68,10 +68,11 @@ if __name__ == '__main__':
                                     ], className='navigation-tabs pt-1 px-4'),
                                     className='shadow-scroller__head d-flex flex-column bg-white flex-shrink-0 '
                                               'trdash-output-detail__navigation'),
-                                    Div(Section(id='output-detail',
+                                    Loading(Div(Section(id='output-detail',
                                                 className='trdash-output-details p-4', role='region'),
-                                        className='shadow-scroller__body flex-grow-1 overflow-none '
-                                                  'trdash-output-detail__content')
+                                                className='shadow-scroller__body flex-grow-1 overflow-none '
+                                                'trdash-output-detail__content'),
+                                            type="dot", fullscreen=True, color="rgba(22, 22, 22, 255)")
                                 ],
                                 className='shadow-scroller d-flex flex-column bg-white trdash-output-detail'),
                             ],
