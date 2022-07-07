@@ -14,6 +14,8 @@ import {ExampleArrowFuncComponentWithHook} from './components/ExampleArrowFuncCo
 import Tooltips from "./components/Tooltips/Tooltips";
 import MainDash from './components/containers/App/MainDash'
 import SummaryCard from "./components/RootList/SummaryCard";
+import PerfTestsTable from "./components/Tables/PerfTestsTable";
+import IntegrationTestsTable from "./components/Tables/IntegrationTestsTable"
 import './styles/custom.scss'
 
 export {
@@ -22,5 +24,7 @@ export {
     ExampleArrowFuncComponentWithHook,
     Tooltips,
     MainDash,
-    SummaryCard
+    SummaryCard,
+    PerfTestsTable,
+    IntegrationTestsTable
 };
