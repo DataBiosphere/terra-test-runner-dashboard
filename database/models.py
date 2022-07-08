@@ -117,6 +117,10 @@ class SummaryTestRun(db.Model):
     def match_today(self) -> bool:
         return func.date(self.startTimestamp) == datetime.now(pytz.timezone('US/Eastern')).date()
 
+    @hybrid_method
+    def has_result_summaries(self) -> bool:
+        return func.array_length(self.testScriptResultSummaries) > 0
+
     def __repr__(self):
         return '<SummaryTestRun %r %r %r %r %r>' % (
             self.id, self.startTimestamp, self.testSuiteName, self.testScriptResultSummaries[0]['testScriptName'], self.testScriptResultSummaries)

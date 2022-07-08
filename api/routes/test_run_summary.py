@@ -142,7 +142,10 @@ async def get_response_time_trends(begin_date, end_date, server_spec):
 
 
 async def get_mc_terra_test_results(begin_date, end_date):
-    results = SummaryTestRun.query.filter(SummaryTestRun.match_date_range(begin_date, end_date)) \
+    results = SummaryTestRun.query.filter(
+        and_(
+            SummaryTestRun.match_date_range(begin_date, end_date),
+            SummaryTestRun.has_result_summaries())) \
         .with_entities(
         SummaryTestRun.versionScriptResults,
         SummaryTestRun.startUserJourneyTimestamp,

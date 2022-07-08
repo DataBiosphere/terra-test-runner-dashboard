@@ -12,7 +12,7 @@ class IntegrationTestsTable extends Component {
             {title: 'Total', field: 'totalRun', type: 'numeric', hidden: true},
             {title: 'Trend date', field: 'trend_date', hidden: true},
             {title: 'Trend totalRun', field: 'trend_totalRun', hidden: true},
-            {title: 'Trend numCompleted', field: 'trend_numCompleted', hidden: true},
+            {title: 'Trend numPassed', field: 'trend_numPassed', hidden: true},
             {title: 'Trend numExceptionsThrown', field: 'trend_numExceptionsThrown', hidden: true},
             {title: 'Trend numExceptionsThrown neg', field: 'trend_numExceptionsThrown_neg', hidden: true},
             {
@@ -28,7 +28,7 @@ class IntegrationTestsTable extends Component {
                             [
                                 {
                                     x: row.trend_date,
-                                    y: row.trend_numCompleted,
+                                    y: row.trend_numPassed,
                                     name: 'Passed',
                                     type: 'bar',
                                     width: 0.3,
@@ -90,15 +90,15 @@ class IntegrationTestsTable extends Component {
                         : <p>{row.numExceptionsThrown}</p>
             },
             {
-                title: 'Passed', field: 'numCompleted',
+                title: 'Passed', field: 'numPassed',
                 cellStyle: {
                     paddingRight: '40px',
                     verticalAlign: 'top',
                 }, type: 'numeric',
                 render: (row) =>
-                    row.numCompleted > 0
-                        ? <p style={{color: "rgba(50, 171, 96, 0.7)", fontWeight: "bold"}}>{row.numCompleted}</p>
-                        : <p style={{color: "rgba(219, 64, 82, 0.7)", fontWeight: "bold"}}>{row.numCompleted}</p>
+                    row.numPassed > 0
+                        ? <p style={{color: "rgba(50, 171, 96, 0.7)", fontWeight: "bold"}}>{row.numPassed}</p>
+                        : <p style={{color: "rgba(219, 64, 82, 0.7)", fontWeight: "bold"}}>{row.numPassed}</p>
             },
             {
                 title: 'Skipped', field: 'numSkipped',
@@ -107,10 +107,9 @@ class IntegrationTestsTable extends Component {
                     verticalAlign: 'top',
                 }, type: 'numeric',
                 render: (row) => {
-                    const skipped = row.totalRun - row.numCompleted - row.numExceptionsThrown;
-                    return skipped > 0
-                        ? <p style={{color: "rgba(219, 64, 82, 0.7)", fontWeight: "bold"}}>{row.numCompleted}</p>
-                        : <p>{skipped}</p>
+                    return row.numSkipped > 0
+                        ? <p style={{color: "rgba(168, 107, 50, 0.7)", fontWeight: "bold"}}>{row.numSkipped}</p>
+                        : <p>{row.numSkipped}</p>
                 },
             },
         ];

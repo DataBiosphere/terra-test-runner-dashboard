@@ -236,6 +236,8 @@ if __name__ == '__main__':
                             'totalRun': test_result['totalRun'][-1],
                             'numCompleted': test_result['numCompleted'][-1],
                             'numExceptionsThrown': test_result['numExceptionsThrown'][-1],
+                            'numPassed': test_result['numCompleted'][-1] - test_result['numExceptionsThrown'][-1],
+                            'numSkipped': test_result['totalRun'][-1] - test_result['numCompleted'][-1],
                             'min': round(test_result['min'][-1]),
                             'max': round(test_result['max'][-1]),
                             'mean': round(test_result['mean'][-1]),
@@ -251,6 +253,9 @@ if __name__ == '__main__':
                             'trend_totalRun': total_run_intraday,
                             'trend_numCompleted': num_completed_intraday,
                             'trend_numExceptionsThrown': num_exceptions_thrown_intraday,
+                            'trend_numPassed': [x-y for x, y in zip(
+                                num_completed_intraday, num_exceptions_thrown_intraday)],
+                            'trend_numSkipped': [x-y for x, y in zip(total_run_intraday, num_completed_intraday)],
                             'trend_numExceptionsThrown_neg': [-v for v in num_exceptions_thrown_intraday],
                         })
 
