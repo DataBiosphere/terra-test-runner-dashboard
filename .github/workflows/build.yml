@@ -17,6 +17,7 @@ on:
   push:
     branches:
       - main
+      - iv-upgrade-build-steps
     paths-ignore:
       - 'README.md'
       - '**.log'
@@ -31,6 +32,12 @@ env:
 jobs:
   tag-publish-job:
     runs-on: ubuntu-latest
+    
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      
     steps:
       - name: Checkout current code
         uses: actions/checkout@v2
@@ -46,12 +53,16 @@ jobs:
           RELEASE_BRANCHES: main
           WITH_V: true
 
-      - name: Auth to GCP
-        uses: google-github-actions/setup-gcloud@v0
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          version: '345.0.0'
-          service_account_email: ${{ secrets.GCP_PUBLISH_EMAIL }}
-          service_account_key: ${{ secrets.GCP_PUBLISH_KEY_B64 }}
+          workload_identity_provider: 'projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider'
+          service_account: ${{ secrets.GCP_PUBLISH_EMAIL }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          version: '>= 363.0.0'
 
       - name: Explicitly auth Docker for Artifact Registry
         run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
