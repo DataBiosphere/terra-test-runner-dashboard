@@ -53,29 +53,27 @@ jobs:
           RELEASE_BRANCHES: main
           WITH_V: true
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - name: Auth to GCP
+        uses: google-github-actions/auth@v1
         with:
-          token_format: 'access_token'
           workload_identity_provider: 'projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider'
-          service_account: ${{ secrets.GCP_PUBLISH_EMAIL }}
+          service_account: 'dsp-artifact-registry-push@dsp-artifact-registry.iam.gserviceaccount.com'
 
-      - name: 'Set up Cloud SDK'
+      - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v1'
-        with:
-          version: '>= 363.0.0'
 
       - name: Explicitly auth Docker for Artifact Registry
-        run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
+        run: gcloud auth configure-docker ${{ env.GOOGLE_DOCKER_REPOSITORY }} --quiet
 
       - name: Construct docker image name and tag
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
-          echo ::set-output name=name::${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${REPOSITORY_NAME}/${IMAGE_NAME}:${DOCKER_TAG}
+          echo ::set-output name=name::${{ env.GOOGLE_DOCKER_REPOSITORY }}/${{ env.GOOGLE_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG}
 
       - name: Build image
-        run: "docker build --build-arg REVERE_BUILD_VERSION=${{ steps.tag.outputs.tag }} -t ${{ steps.image-name.outputs.name }} ."
+        run: |
+          docker build --build-arg REVERE_BUILD_VERSION=${{ steps.tag.outputs.tag }} -t ${{ steps.image-name.outputs.name }} .
 
       - name: Run Trivy vulnerability scanner
         # From https://github.com/broadinstitute/dsp-appsec-trivy-action
@@ -84,4 +82,6 @@ jobs:
           image: ${{ steps.image-name.outputs.name }}
 
       - name: Push image
-        run: "docker push ${{ steps.image-name.outputs.name }}"
+        run: |
+          echo ${{ steps.image-name.outputs.name }}
+          docker push ${{ steps.image-name.outputs.name }}
