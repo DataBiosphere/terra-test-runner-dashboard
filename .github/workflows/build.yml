@@ -73,7 +73,6 @@ jobs:
 
       - name: Build image
         run: |
-          gcloud auth login
           docker build --build-arg REVERE_BUILD_VERSION=${{ steps.tag.outputs.tag }} -t ${{ steps.image-name.outputs.name }} .
 
       - name: Run Trivy vulnerability scanner
@@ -84,5 +83,4 @@ jobs:
 
       - name: Push image
         run: |
-          gcloud auth login
           docker push ${{ steps.image-name.outputs.name }}
