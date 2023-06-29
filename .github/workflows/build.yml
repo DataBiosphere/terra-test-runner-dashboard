@@ -17,6 +17,7 @@ on:
   push:
     branches:
       - main
+      - iv-upgrade-build-steps
     paths-ignore:
       - 'README.md'
       - '**.log'
@@ -31,6 +32,12 @@ env:
 jobs:
   tag-publish-job:
     runs-on: ubuntu-latest
+    
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      
     steps:
       - name: Checkout current code
         uses: actions/checkout@v2
@@ -47,23 +54,26 @@ jobs:
           WITH_V: true
 
       - name: Auth to GCP
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/auth@v1
         with:
-          version: '345.0.0'
-          service_account_email: ${{ secrets.GCP_PUBLISH_EMAIL }}
-          service_account_key: ${{ secrets.GCP_PUBLISH_KEY_B64 }}
+          workload_identity_provider: 'projects/1038484894585/locations/global/workloadIdentityPools/github-wi-pool/providers/github-wi-provider'
+          service_account: 'dsp-artifact-registry-push@dsp-artifact-registry.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
 
       - name: Explicitly auth Docker for Artifact Registry
-        run: gcloud auth configure-docker $GOOGLE_DOCKER_REPOSITORY --quiet
+        run: gcloud auth configure-docker ${{ env.GOOGLE_DOCKER_REPOSITORY }} --quiet
 
       - name: Construct docker image name and tag
         id: image-name
         run: |
           DOCKER_TAG=${{ steps.tag.outputs.tag }}
-          echo ::set-output name=name::${GOOGLE_DOCKER_REPOSITORY}/${GOOGLE_PROJECT}/${REPOSITORY_NAME}/${IMAGE_NAME}:${DOCKER_TAG}
+          echo ::set-output name=name::${{ env.GOOGLE_DOCKER_REPOSITORY }}/${{ env.GOOGLE_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${DOCKER_TAG}
 
       - name: Build image
-        run: "docker build --build-arg REVERE_BUILD_VERSION=${{ steps.tag.outputs.tag }} -t ${{ steps.image-name.outputs.name }} ."
+        run: |
+          docker build --build-arg REVERE_BUILD_VERSION=${{ steps.tag.outputs.tag }} -t ${{ steps.image-name.outputs.name }} .
 
       - name: Run Trivy vulnerability scanner
         # From https://github.com/broadinstitute/dsp-appsec-trivy-action
@@ -72,4 +82,5 @@ jobs:
           image: ${{ steps.image-name.outputs.name }}
 
       - name: Push image
-        run: "docker push ${{ steps.image-name.outputs.name }}"
+        run: |
+          docker push ${{ steps.image-name.outputs.name }}
